@@ -12,27 +12,29 @@ export function formatTime(date) {
   }).format(date);
 }
 
-export function formatDateTime(date) {
-  return new Intl.DateTimeFormat('ja-JP', {
-    month: 'numeric',
-    day: 'numeric',
-    weekday: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  }).format(date);
-}
-
 export function calculateTimeline({
   scheduledAt,
   timeType,
   durationMinutes,
   preparationMinutes,
   bufferMinutes,
+  actualDeparture = null,
+  actualArrival = null,
 }) {
   const durationMs = Math.max(0, durationMinutes) * 60_000;
   const preparationMs = Math.max(0, preparationMinutes) * 60_000;
   const bufferMs = Math.max(0, bufferMinutes) * 60_000;
+
+  if (actualDeparture instanceof Date && actualArrival instanceof Date) {
+    return {
+      preparationStart: new Date(actualDeparture.getTime() - preparationMs),
+      recommendedDeparture: actualDeparture,
+      expectedArrival: actualArrival,
+      bufferMinutes: timeType === 'arrival'
+        ? Math.max(0, Math.floor((scheduledAt.getTime() - actualArrival.getTime()) / 60_000))
+        : 0,
+    };
+  }
 
   if (timeType === 'arrival') {
     const departure = new Date(scheduledAt.getTime() - durationMs - bufferMs);
@@ -88,6 +90,51 @@ function getTransitLines(steps) {
   )];
 }
 
+function validDate(value) {
+  if (value === null || value === undefined || value === '') return null;
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function getTransitSchedule(steps, durationMinutes) {
+  const transitIndexes = steps
+    .map((step, index) => (step.travelMode === 'TRANSIT' ? index : -1))
+    .filter((index) => index >= 0);
+  if (transitIndexes.length === 0) {
+    return { departureTime: null, arrivalTime: null };
+  }
+
+  const firstIndex = transitIndexes[0];
+  const lastIndex = transitIndexes[transitIndexes.length - 1];
+  const firstTransitDeparture = validDate(steps[firstIndex].transitDetails?.departureTime);
+  const lastTransitArrival = validDate(steps[lastIndex].transitDetails?.arrivalTime);
+  const beforeTransitMs = steps.slice(0, firstIndex).reduce(
+    (total, step) => total + (Number(step.staticDurationMillis) || 0),
+    0,
+  );
+  const afterTransitMs = steps.slice(lastIndex + 1).reduce(
+    (total, step) => total + (Number(step.staticDurationMillis) || 0),
+    0,
+  );
+
+  let departureTime = firstTransitDeparture
+    ? new Date(firstTransitDeparture.getTime() - beforeTransitMs)
+    : null;
+  let arrivalTime = lastTransitArrival
+    ? new Date(lastTransitArrival.getTime() + afterTransitMs)
+    : null;
+  const durationMs = durationMinutes * 60_000;
+
+  if (!departureTime && arrivalTime) {
+    departureTime = new Date(arrivalTime.getTime() - durationMs);
+  }
+  if (departureTime && !arrivalTime) {
+    arrivalTime = new Date(departureTime.getTime() + durationMs);
+  }
+
+  return { departureTime, arrivalTime };
+}
+
 export function calculateStressScore({
   durationMinutes,
   walkingMinutes,
@@ -134,6 +181,7 @@ export function summarizeGoogleRoute(route, index, travelMode) {
     TRANSIT: '公共交通',
     WALKING: '徒歩',
   };
+  const schedule = getTransitSchedule(steps, durationMinutes);
 
   return {
     index,
@@ -149,6 +197,8 @@ export function summarizeGoogleRoute(route, index, travelMode) {
     stressScore,
     stressLabel: getStressLabel(stressScore),
     warnings: Array.isArray(route.warnings) ? route.warnings.filter(Boolean) : [],
+    departureTime: schedule.departureTime,
+    arrivalTime: schedule.arrivalTime,
   };
 }
 

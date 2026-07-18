@@ -32,10 +32,11 @@ Google Mapsのキーはブラウザーに配信されるため、利用するWeb
 ```bash
 export GOOGLE_MAPS_BROWSER_API_KEY="..."
 export GEMINI_API_KEY="..."
+export APP_ORIGIN="http://localhost:3000"
 npm start
 ```
 
-`http://localhost:3000`を開きます。Geminiのモデルを変更する場合は`GEMINI_MODEL`を設定できます。設定項目は`.env.example`も参照してください。
+`http://localhost:3000`を開きます。Geminiのモデルを変更する場合は`GEMINI_MODEL`を設定できます。公開環境では`APP_ORIGIN`を実際のHTTPS URLにしてください。信頼できるリバースプロキシが`X-Forwarded-For`を設定する場合のみ`TRUST_PROXY=1`を使用します。設定項目は`.env.example`も参照してください。
 
 ## テスト
 

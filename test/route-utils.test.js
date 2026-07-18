@@ -40,6 +40,23 @@ test('到着希望から準備開始と出発時刻を逆算する', () => {
   assert.equal(timeline.expectedArrival.getMinutes(), 50);
 });
 
+test('公共交通の実時刻がある場合は単純な所要時間計算より優先する', () => {
+  const timeline = calculateTimeline({
+    scheduledAt: new Date('2026-07-18T10:00:00'),
+    timeType: 'arrival',
+    durationMinutes: 40,
+    preparationMinutes: 20,
+    bufferMinutes: 10,
+    actualDeparture: new Date('2026-07-18T09:07:00'),
+    actualArrival: new Date('2026-07-18T09:48:00'),
+  });
+
+  assert.equal(timeline.preparationStart.getMinutes(), 47);
+  assert.equal(timeline.recommendedDeparture.getMinutes(), 7);
+  assert.equal(timeline.expectedArrival.getMinutes(), 48);
+  assert.equal(timeline.bufferMinutes, 12);
+});
+
 test('徒歩と乗換が増えるほど負担度が上がる', () => {
   const easy = calculateStressScore({
     durationMinutes: 30,
@@ -67,11 +84,17 @@ test('Google Routeデータから決定的な比較情報を作る', () => {
         { travelMode: 'WALKING', staticDurationMillis: 8 * 60_000, distanceMeters: 600 },
         {
           travelMode: 'TRANSIT',
-          transitDetails: { transitLine: { shortName: '東横線' } },
+          transitDetails: {
+            departureTime: new Date('2026-07-18T09:10:00'),
+            transitLine: { shortName: '東横線' },
+          },
         },
         {
           travelMode: 'TRANSIT',
-          transitDetails: { transitLine: { name: 'みなとみらい線' } },
+          transitDetails: {
+            arrivalTime: new Date('2026-07-18T09:45:00'),
+            transitLine: { name: 'みなとみらい線' },
+          },
         },
       ],
     }],
@@ -83,6 +106,10 @@ test('Google Routeデータから決定的な比較情報を作る', () => {
   assert.equal(summary.walkingMinutes, 8);
   assert.equal(summary.transfers, 1);
   assert.deepEqual(summary.lines, ['東横線', 'みなとみらい線']);
+  assert.equal(summary.departureTime.getHours(), 9);
+  assert.equal(summary.departureTime.getMinutes(), 2);
+  assert.equal(summary.arrivalTime.getHours(), 9);
+  assert.equal(summary.arrivalTime.getMinutes(), 45);
 });
 
 test('利用者の優先条件でおすすめを切り替える', () => {

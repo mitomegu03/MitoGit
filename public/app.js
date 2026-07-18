@@ -1,7 +1,6 @@
 import {
   calculateTimeline,
   chooseRecommendedRoute,
-  formatDateTime,
   formatTime,
   parseScheduledDate,
   summarizeGoogleRoute,
@@ -24,6 +23,7 @@ const state = {
   map: null,
   mapPolylines: [],
   mapMarkers: [],
+  mapRenderId: 0,
   RouteClass: null,
 };
 
@@ -399,22 +399,30 @@ function buildRouteRequest({ origin, destination, scheduledAt, timeType }) {
 
 async function computeRoutes(input) {
   const request = buildRouteRequest(input);
+  let result = await state.RouteClass.computeRoutes(request);
+  let routes = result.routes || [];
 
-  if (elements.travelMode.value === 'DRIVING' && input.timeType === 'arrival') {
-    const initial = await state.RouteClass.computeRoutes(request);
-    const durationMs = Number(initial.routes?.[0]?.durationMillis);
-    if (durationMs) {
-      const bufferMs = (Number(elements.bufferMinutes.value) || 0) * 60_000;
-      const estimatedDeparture = new Date(input.scheduledAt.getTime() - durationMs - bufferMs);
-      if (estimatedDeparture.getTime() > Date.now()) {
-        request.departureTime = estimatedDeparture;
-        request.routingPreference = 'TRAFFIC_AWARE';
-      }
+  if (elements.travelMode.value !== 'DRIVING' || input.timeType !== 'arrival') {
+    return routes;
+  }
+
+  const bufferMs = (Number(elements.bufferMinutes.value) || 0) * 60_000;
+  for (let attempt = 0; attempt < 2 && routes[0]; attempt += 1) {
+    const durationMs = Number(routes[0].durationMillis);
+    if (!durationMs) break;
+    const estimatedDeparture = new Date(input.scheduledAt.getTime() - durationMs - bufferMs);
+    if (estimatedDeparture.getTime() <= Date.now()) break;
+    const previousDeparture = request.departureTime?.getTime();
+    request.departureTime = estimatedDeparture;
+    request.routingPreference = 'TRAFFIC_AWARE';
+    result = await state.RouteClass.computeRoutes(request);
+    routes = result.routes || [];
+    if (previousDeparture && Math.abs(previousDeparture - estimatedDeparture.getTime()) < 60_000) {
+      break;
     }
   }
 
-  const result = await state.RouteClass.computeRoutes(request);
-  return result.routes || [];
+  return routes;
 }
 
 async function searchRoutes() {
@@ -448,7 +456,7 @@ async function searchRoutes() {
     elements.timelineSection.classList.remove('hidden');
     elements.aiSection.classList.remove('hidden');
     showMessage(`${routes.length}件の候補を比較しました。時刻はGoogle Mapsの経路情報から計算しています。`);
-    await requestAiRecommendation(input);
+    void requestAiRecommendation(input);
   } catch (error) {
     const message = error instanceof Error ? error.message : '経路検索に失敗しました。';
     showMessage(`検索できませんでした：${message}`, true);
@@ -518,12 +526,15 @@ function selectRoute(index) {
 }
 
 function renderTimeline(route, input) {
+  const useTransitSchedule = elements.travelMode.value === 'TRANSIT';
   const timeline = calculateTimeline({
     scheduledAt: input.scheduledAt,
     timeType: input.timeType,
     durationMinutes: route.durationMinutes,
     preparationMinutes: Number(elements.preparationMinutes.value) || 0,
     bufferMinutes: Number(elements.bufferMinutes.value) || 0,
+    actualDeparture: useTransitSchedule ? route.departureTime : null,
+    actualArrival: useTransitSchedule ? route.arrivalTime : null,
   });
   const items = [
     ['準備開始', formatTime(timeline.preparationStart), '身支度をスタート'],
@@ -544,6 +555,7 @@ function renderTimeline(route, input) {
 
 async function renderMapRoute(index) {
   if (!state.map || !state.currentRoutes[index]) return;
+  const renderId = ++state.mapRenderId;
   state.mapPolylines.forEach((polyline) => polyline.setMap(null));
   state.mapMarkers.forEach((marker) => { marker.map = null; });
   state.mapPolylines = [];
@@ -551,9 +563,16 @@ async function renderMapRoute(index) {
 
   try {
     const route = state.currentRoutes[index];
-    state.mapPolylines = route.createPolylines();
-    state.mapPolylines.forEach((polyline) => polyline.setMap(state.map));
-    state.mapMarkers = await route.createWaypointAdvancedMarkers();
+    const polylines = route.createPolylines();
+    polylines.forEach((polyline) => polyline.setMap(state.map));
+    const markers = await route.createWaypointAdvancedMarkers();
+    if (renderId !== state.mapRenderId) {
+      polylines.forEach((polyline) => polyline.setMap(null));
+      markers.forEach((marker) => { marker.map = null; });
+      return;
+    }
+    state.mapPolylines = polylines;
+    state.mapMarkers = markers;
     state.mapMarkers.forEach((marker) => { marker.map = state.map; });
     if (route.viewport) state.map.fitBounds(route.viewport);
   } catch {
@@ -588,23 +607,27 @@ async function requestAiRecommendation(input) {
   }
 
   try {
+    const abortController = new AbortController();
+    const timeout = window.setTimeout(() => abortController.abort(), 13_000);
     const response = await fetch('/api/concierge', {
       method: 'POST',
+      signal: abortController.signal,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         origin: input.origin,
         destination: input.destination,
         preference: preferenceLabel(elements.routePreference.value),
+        recommendedRouteIndex: state.recommendedIndex,
         routes: state.routeSummaries,
       }),
-    });
+    }).finally(() => window.clearTimeout(timeout));
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'AIの提案を取得できませんでした。');
 
     elements.aiSummary.textContent = result.summary;
     elements.aiReason.textContent = result.reason;
     elements.aiCautions.replaceChildren();
-    result.cautions.forEach((caution) => {
+    (Array.isArray(result.cautions) ? result.cautions : []).forEach((caution) => {
       elements.aiCautions.append(createElement('li', { text: caution }));
     });
     elements.aiCautions.append(

@@ -1,18 +1,19 @@
 :root {
-  color-scheme: dark;
-  --bg: #0b1220;
-  --panel: #121c2d;
-  --panel-soft: #18253a;
-  --line: #293952;
-  --text: #f5f8ff;
-  --muted: #9babc1;
-  --primary: #5b8cff;
-  --primary-dark: #3769df;
-  --cyan: #55d5e0;
-  --green: #67d69b;
-  --danger: #ff7d8d;
-  --shadow: 0 18px 45px rgb(0 0 0 / 24%);
+  color-scheme: light;
+  --bg: #edf3fa;
+  --panel: #ffffff;
+  --panel-soft: #f3f6fb;
+  --line: #d6e0ed;
+  --text: #17243a;
+  --muted: #5f7088;
+  --primary: #3974eb;
+  --primary-dark: #245bd0;
+  --cyan: #168fa5;
+  --green: #218a58;
+  --danger: #c93650;
+  --shadow: 0 12px 32px rgb(42 67 105 / 12%);
   font-family: Inter, "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
 }
 
 * {
@@ -25,9 +26,10 @@ body {
   margin: 0;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   background:
-    radial-gradient(circle at 85% -10%, rgb(70 105 190 / 28%), transparent 30rem),
+    radial-gradient(circle at 85% -10%, rgb(96 142 231 / 20%), transparent 30rem),
     var(--bg);
   color: var(--text);
+  line-height: 1.45;
 }
 
 button,
@@ -57,13 +59,13 @@ p {
 
 h1 {
   margin-bottom: 0;
-  font-size: clamp(1.05rem, 4vw, 1.35rem);
+  font-size: clamp(1.15rem, 4.5vw, 1.4rem);
   letter-spacing: .01em;
 }
 
 h2 {
   margin-bottom: 0;
-  font-size: 1.18rem;
+  font-size: 1.28rem;
 }
 
 .app-header {
@@ -74,8 +76,8 @@ h2 {
   align-items: center;
   justify-content: space-between;
   padding: 15px max(18px, calc((100vw - 720px) / 2));
-  border-bottom: 1px solid rgb(255 255 255 / 6%);
-  background: rgb(11 18 32 / 82%);
+  border-bottom: 1px solid rgb(88 112 148 / 13%);
+  background: rgb(255 255 255 / 88%);
   backdrop-filter: blur(18px);
 }
 
@@ -96,6 +98,7 @@ h2 {
   place-items: center;
   border-radius: 13px;
   background: linear-gradient(135deg, var(--primary), #775bff);
+  color: #fff;
   box-shadow: 0 8px 22px rgb(91 140 255 / 28%);
   font-size: 1.3rem;
   font-weight: 800;
@@ -104,13 +107,13 @@ h2 {
 .eyebrow {
   margin-bottom: 4px;
   color: var(--muted);
-  font-size: .66rem;
+  font-size: .7rem;
   font-weight: 800;
   letter-spacing: .13em;
 }
 
 .eyebrow.accent {
-  color: #88aaff;
+  color: var(--primary-dark);
 }
 
 .eyebrow.green {
@@ -132,7 +135,7 @@ h2 {
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: var(--panel-soft);
+  background: #eef3fa;
   font-size: 1.1rem;
 }
 
@@ -151,7 +154,7 @@ main {
 
 .panel {
   padding: 17px;
-  background: linear-gradient(145deg, rgb(20 31 49 / 98%), rgb(15 24 40 / 98%));
+  background: var(--panel);
 }
 
 .weather-card {
@@ -159,6 +162,7 @@ main {
   overflow: hidden;
   padding: 19px;
   border-color: rgb(119 167 255 / 18%);
+  color: #fff;
   background:
     radial-gradient(circle at 90% 5%, rgb(255 255 255 / 16%), transparent 12rem),
     linear-gradient(135deg, #2454a0, #303d8d 65%, #4f3a8d);
@@ -180,6 +184,14 @@ main {
   margin-bottom: 14px;
 }
 
+.weather-card .eyebrow {
+  color: rgb(255 255 255 / 72%);
+}
+
+.weather-card h2 {
+  color: #fff;
+}
+
 .weather-icon {
   font-size: 2.8rem;
 }
@@ -187,7 +199,7 @@ main {
 #weather-summary {
   margin: 6px 0 0;
   color: rgb(255 255 255 / 80%);
-  font-size: .9rem;
+  font-size: .95rem;
 }
 
 .weather-forecast {
@@ -227,8 +239,8 @@ main {
 }
 
 .route-label {
-  color: #b9c8df;
-  font-size: .82rem;
+  color: #425776;
+  font-size: .9rem;
   font-weight: 800;
 }
 
@@ -243,7 +255,7 @@ main {
   z-index: 12;
   top: 76px;
   padding-block: 12px;
-  box-shadow: 0 12px 30px rgb(0 0 0 / 32%);
+  box-shadow: 0 12px 30px rgb(38 62 98 / 18%);
 }
 
 .route-panel.results-mode .route-toolbar {
@@ -270,13 +282,13 @@ main {
 }
 
 .compact-search-summary strong {
-  font-size: .9rem;
+  font-size: 1rem;
 }
 
 .compact-search-summary span {
   margin-top: 3px;
   color: var(--muted);
-  font-size: .72rem;
+  font-size: .78rem;
 }
 
 .compact-search-summary .ghost-button {
@@ -293,27 +305,27 @@ main {
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--muted);
-  background: rgb(255 255 255 / 3%);
-  font-size: .72rem;
+  background: #f5f7fb;
+  font-size: .76rem;
   white-space: nowrap;
 }
 
 .status-badge.ready {
   border-color: rgb(103 214 155 / 30%);
   color: var(--green);
-  background: rgb(103 214 155 / 8%);
+  background: #e9f8f0;
 }
 
 .status-badge.error {
   border-color: rgb(255 125 141 / 30%);
   color: var(--danger);
-  background: rgb(255 125 141 / 8%);
+  background: #fff0f2;
 }
 
 .status-badge.demo {
   border-color: rgb(255 210 118 / 30%);
-  color: #ffd276;
-  background: rgb(255 210 118 / 8%);
+  color: #8b6410;
+  background: #fff8e2;
 }
 
 .chip-row {
@@ -332,9 +344,9 @@ main {
   padding: 7px 11px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  color: #c8d5e8;
+  color: #405673;
   background: var(--panel-soft);
-  font-size: .76rem;
+  font-size: .8rem;
   white-space: nowrap;
   cursor: pointer;
 }
@@ -345,7 +357,7 @@ main {
   padding: 12px;
   border: 1px solid var(--line);
   border-radius: 16px;
-  background: rgb(5 11 20 / 38%);
+  background: #f7f9fc;
 }
 
 .location-row {
@@ -380,7 +392,7 @@ main {
   display: grid;
   gap: 7px;
   color: var(--muted);
-  font-size: .76rem;
+  font-size: .8rem;
   font-weight: 700;
 }
 
@@ -388,7 +400,7 @@ main {
   display: block;
   margin-bottom: 6px;
   color: var(--muted);
-  font-size: .74rem;
+  font-size: .8rem;
   font-weight: 700;
 }
 
@@ -398,7 +410,7 @@ main {
 
 gmp-place-autocomplete {
   width: 100%;
-  color: #182235;
+  color: var(--text);
 }
 
 .location-button,
@@ -410,7 +422,7 @@ gmp-place-autocomplete {
 .location-button {
   align-self: flex-end;
   border-radius: 12px;
-  background: var(--panel-soft);
+  background: #edf4ff;
   color: var(--cyan);
   font-size: 1.25rem;
 }
@@ -420,8 +432,8 @@ gmp-place-autocomplete {
   height: 32px;
   margin: 5px auto;
   border-radius: 50%;
-  background: var(--panel-soft);
-  color: #9eb7ef;
+  background: #edf4ff;
+  color: var(--primary);
   font-size: 1.05rem;
 }
 
@@ -433,11 +445,12 @@ select {
   border: 1px solid var(--line);
   border-radius: 11px;
   color: var(--text);
-  background: #101a2a;
+  background: #fff;
+  font-size: .96rem;
 }
 
 input::placeholder {
-  color: #6f819a;
+  color: #8695aa;
 }
 
 .form-grid {
@@ -457,7 +470,7 @@ input::placeholder {
   padding: 3px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: #0e1726;
+  background: #eef3f9;
 }
 
 .segmented-control legend {
@@ -485,14 +498,14 @@ input::placeholder {
   border-radius: 9px;
   color: var(--muted);
   text-align: center;
-  font-size: .82rem;
+  font-size: .86rem;
   font-weight: 700;
 }
 
 .segmented-control input:checked + span {
-  color: white;
-  background: var(--panel-soft);
-  box-shadow: 0 3px 10px rgb(0 0 0 / 18%);
+  color: var(--primary-dark);
+  background: #fff;
+  box-shadow: 0 3px 10px rgb(42 67 105 / 12%);
 }
 
 .advanced-options {
@@ -503,9 +516,9 @@ input::placeholder {
 
 summary {
   padding: 12px 2px;
-  color: #b3c1d4;
+  color: #425776;
   cursor: pointer;
-  font-size: .83rem;
+  font-size: .88rem;
   font-weight: 700;
 }
 
@@ -548,6 +561,7 @@ summary {
   border: 0;
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   box-shadow: 0 10px 25px rgb(63 103 220 / 25%);
+  font-size: .95rem;
 }
 
 .primary-button:disabled {
@@ -568,11 +582,13 @@ summary {
 
 .ghost-button {
   border: 1px solid var(--line);
+  color: #405673;
   background: transparent;
 }
 
 .ghost-button.light {
   border-color: rgb(255 255 255 / 20%);
+  color: #fff;
   background: rgb(255 255 255 / 8%);
 }
 
@@ -580,7 +596,7 @@ summary {
   min-height: 1.2em;
   margin: 11px 2px 0;
   color: var(--muted);
-  font-size: .8rem;
+  font-size: .85rem;
 }
 
 .message:empty {
@@ -602,21 +618,22 @@ summary {
   padding: 14px 10px;
   border: 1px solid var(--line);
   border-radius: 13px;
-  background: var(--panel-soft);
+  background: #f5f8fc;
   text-align: center;
 }
 
 .timeline-item strong {
   display: block;
   margin: 5px 0 3px;
-  font-size: 1.12rem;
+  color: #15315c;
+  font-size: 1.28rem;
 }
 
 .timeline-item span,
 .timeline-item small {
   display: block;
   color: var(--muted);
-  font-size: .7rem;
+  font-size: .76rem;
 }
 
 .route-results {
@@ -658,7 +675,7 @@ summary {
 .route-card h3 {
   overflow: hidden;
   margin-bottom: 4px;
-  font-size: .96rem;
+  font-size: 1.05rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -666,9 +683,9 @@ summary {
 .recommended-label {
   padding: 4px 7px;
   border-radius: 999px;
-  color: #b9f5d3;
-  background: rgb(103 214 155 / 12%);
-  font-size: .65rem;
+  color: #176a42;
+  background: #e3f6eb;
+  font-size: .7rem;
   font-weight: 800;
 }
 
@@ -694,13 +711,13 @@ summary {
 }
 
 .metric strong {
-  font-size: .9rem;
+  font-size: .98rem;
 }
 
 .metric span {
   margin-top: 2px;
   color: var(--muted);
-  font-size: .66rem;
+  font-size: .72rem;
 }
 
 .stress-low {
@@ -708,7 +725,7 @@ summary {
 }
 
 .stress-medium {
-  color: #ffd276;
+  color: #9a6410;
 }
 
 .stress-high {
@@ -718,7 +735,7 @@ summary {
 .route-warning,
 .small-note {
   color: var(--muted);
-  font-size: .7rem;
+  font-size: .75rem;
 }
 
 .route-warning {
@@ -733,7 +750,7 @@ summary {
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 15px;
-  background: #0c1421;
+  background: #e8eef7;
 }
 
 .map-placeholder {
@@ -743,15 +760,15 @@ summary {
   margin: 0;
   place-items: center;
   color: var(--muted);
-  font-size: .78rem;
+  font-size: .84rem;
 }
 
 .ai-panel {
   scroll-margin-top: 148px;
-  border-color: rgb(91 140 255 / 35%);
+  border-color: #b8cdf7;
   background:
-    radial-gradient(circle at 100% 0, rgb(91 140 255 / 13%), transparent 18rem),
-    linear-gradient(145deg, #142039, #111a2c);
+    radial-gradient(circle at 100% 0, rgb(91 140 255 / 12%), transparent 18rem),
+    linear-gradient(145deg, #f5f8ff, #edf3ff);
 }
 
 .ai-heading {
@@ -768,13 +785,14 @@ summary {
 .ai-summary {
   margin-bottom: 8px;
   font-weight: 800;
+  font-size: 1rem;
   line-height: 1.6;
 }
 
 #ai-reason,
 .caution-list {
-  color: #b8c5d8;
-  font-size: .84rem;
+  color: #425776;
+  font-size: .9rem;
   line-height: 1.65;
 }
 
@@ -809,7 +827,7 @@ summary {
   padding: 11px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: rgb(255 255 255 / 2%);
+  background: #f7f9fc;
 }
 
 .saved-item strong,
@@ -835,10 +853,10 @@ summary {
 .text-button {
   padding: 5px 7px;
   border: 0;
-  color: #aac1f5;
+  color: var(--primary-dark);
   background: transparent;
   cursor: pointer;
-  font-size: .72rem;
+  font-size: .78rem;
   font-weight: 700;
 }
 
@@ -849,7 +867,7 @@ summary {
 .empty-state {
   margin: 5px 0 0;
   color: var(--muted);
-  font-size: .8rem;
+  font-size: .85rem;
 }
 
 dialog {
@@ -863,7 +881,7 @@ dialog {
 }
 
 dialog::backdrop {
-  background: rgb(2 6 12 / 70%);
+  background: rgb(24 38 60 / 48%);
   backdrop-filter: blur(4px);
 }
 
@@ -875,7 +893,7 @@ dialog::backdrop {
 .connection-row {
   padding: 12px 0;
   border-top: 1px solid var(--line);
-  font-size: .88rem;
+  font-size: .92rem;
   font-weight: 700;
 }
 
@@ -893,7 +911,7 @@ dialog::backdrop {
   display: grid;
   gap: 6px;
   color: var(--muted);
-  font-size: .76rem;
+  font-size: .82rem;
   font-weight: 700;
 }
 
@@ -908,14 +926,14 @@ dialog::backdrop {
 .setup-note {
   margin: 0;
   color: var(--muted);
-  font-size: .7rem;
+  font-size: .76rem;
   line-height: 1.5;
 }
 
 .dialog-note {
   margin: 14px 0 0;
   color: var(--muted);
-  font-size: .76rem;
+  font-size: .8rem;
   line-height: 1.6;
 }
 
@@ -934,7 +952,7 @@ dialog::backdrop {
 
   .schedule-grid input {
     padding-inline: 9px;
-    font-size: .86rem;
+    font-size: .92rem;
   }
 
   .timeline {

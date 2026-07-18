@@ -5,7 +5,8 @@ import { fileURLToPath } from 'node:url';
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(rootDir, 'public');
-const port = Number(process.env.PORT || 3000);
+const port = Number(process.env.PORT || 4173);
+const host = process.env.HOST || '0.0.0.0';
 const rateLimits = new Map();
 const personalSetupEnabled = process.env.ALLOW_PERSONAL_API_SETUP === '1'
   || (process.env.ALLOW_PERSONAL_API_SETUP !== '0' && process.env.NODE_ENV !== 'production');
@@ -396,6 +397,6 @@ const server = createServer(async (request, response) => {
   }
 });
 
-server.listen(port, () => {
-  console.log(`AIルートコンシェルジュ: http://localhost:${port}`);
+server.listen(port, host, () => {
+  console.log(`AIルートコンシェルジュ: http://localhost:${port} (${host}で待受中)`);
 });

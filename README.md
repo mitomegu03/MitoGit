@@ -33,11 +33,12 @@ Google Mapsのキーはブラウザーに配信されるため、利用するWeb
 ```bash
 export GOOGLE_MAPS_BROWSER_API_KEY="..."
 export GEMINI_API_KEY="..."
-export APP_ORIGIN="http://localhost:3000"
 npm start
 ```
 
-`http://localhost:3000`を開きます。Geminiのモデルを変更する場合は`GEMINI_MODEL`を設定できます。公開環境では`APP_ORIGIN`を実際のHTTPS URLにしてください。リバースプロキシが`X-Forwarded-For`を設定する場合は、そのプロキシのIPだけを`TRUSTED_PROXY_IPS`へ設定します。設定項目は`.env.example`も参照してください。
+PCでは`http://localhost:4173`を開きます。同じWi-Fiの実機では`http://<PCのLAN側IPアドレス>:4173`を開いてください。ローカル実機確認では`APP_ORIGIN`を未設定にするか、実機から開くURLと同じ値にします。ファイアウォールを利用している場合はTCP 4173番の受信を許可してください。
+
+Geminiのモデルを変更する場合は`GEMINI_MODEL`を設定できます。公開環境では`APP_ORIGIN`を実際のHTTPS URLにしてください。リバースプロキシが`X-Forwarded-For`を設定する場合は、そのプロキシのIPだけを`TRUSTED_PROXY_IPS`へ設定します。設定項目は`.env.example`も参照してください。
 
 開発環境では右上の設定画面からAPIキーを一時入力できます。キーはブラウザーには保存されず、サーバーのメモリだけに保持されるため、再起動後は再入力が必要です。公開時は`NODE_ENV=production`または`ALLOW_PERSONAL_API_SETUP=0`で入力機能を無効にしてください。
 

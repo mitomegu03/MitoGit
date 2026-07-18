@@ -6,7 +6,7 @@ import {
   summarizeGoogleRoute,
   weatherIcon,
   weatherLabel,
-} from './route-utils.js';
+} from './route-utils.js?v=3';
 
 const STORAGE_KEYS = {
   places: 'route-concierge:places:v1',

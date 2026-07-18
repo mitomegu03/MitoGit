@@ -672,7 +672,7 @@ summary {
 }
 
 .map {
-  display: grid;
+  position: relative;
   width: 100%;
   height: 280px;
   margin-top: 14px;
@@ -680,11 +680,14 @@ summary {
   border: 1px solid var(--line);
   border-radius: 15px;
   background: #0c1421;
-  place-items: center;
 }
 
 .map-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
   margin: 0;
+  place-items: center;
   color: var(--muted);
   font-size: .78rem;
 }

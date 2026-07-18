@@ -130,6 +130,7 @@ async function loadConfiguration() {
     state.config = await response.json();
     if (state.config.personalSetupEnabled) {
       elements.personalApiSetup.classList.remove('hidden');
+      elements.personalApiSetup.open = !state.config.mapsConfigured;
       elements.apiConfigNote.textContent = '個人用の一時設定です。キーはブラウザに保存されず、サーバーを再起動すると消去されます。';
     }
 
@@ -208,6 +209,7 @@ async function initializeGoogleMaps() {
   });
 
   state.demoMode = false;
+  elements.demoSample.classList.add('hidden');
   elements.mapPlaceholder.classList.add('hidden');
   elements.searchRouteLabel.textContent = '最適なルートを調べる';
   setStatus(elements.mapsStatus, '接続済み', 'ready');
@@ -235,11 +237,18 @@ function enableFallbackInputs() {
 function enableDemoMode() {
   state.demoMode = true;
   enableFallbackInputs();
+  elements.demoSample.classList.remove('hidden');
   setStatus(elements.mapsStatus, 'デモ', 'demo');
   elements.searchRouteLabel.textContent = 'デモ結果を表示';
   elements.routeDataSource.textContent = 'デモデータ';
   elements.mapPlaceholder.classList.remove('hidden');
   showMessage('出発地と目的地を入力すると、API設定前でも完成イメージを確認できます。');
+}
+
+function runDemoSample() {
+  setLocationValue('origin', '横浜駅');
+  setLocationValue('destination', '東京駅');
+  runDemoSearch();
 }
 
 function getLocationValue(type) {
@@ -1007,6 +1016,7 @@ function cacheElements() {
     commuteTime: byId('commute-time'),
     destinationAutocomplete: byId('destination-autocomplete'),
     destinationFallback: byId('destination-fallback'),
+    demoSample: byId('demo-sample'),
     favoritePlaceChips: byId('favorite-place-chips'),
     geminiConfigStatus: byId('gemini-config-status'),
     geminiApiKey: byId('gemini-api-key'),
@@ -1051,6 +1061,7 @@ function cacheElements() {
 
 function attachEvents() {
   byId('swap-locations').addEventListener('click', swapLocations);
+  elements.demoSample.addEventListener('click', runDemoSample);
   byId('current-location').addEventListener('click', useCurrentLocation);
   elements.loadWeather.addEventListener('click', loadWeather);
   elements.searchRoute.addEventListener('click', searchRoutes);
@@ -1060,7 +1071,14 @@ function attachEvents() {
   byId('clear-api-config').addEventListener('click', clearPersonalApiConfig);
   elements.cancelPlaceEdit.addEventListener('click', resetPlaceForm);
   elements.cancelRouteEdit.addEventListener('click', resetRouteForm);
-  byId('open-settings').addEventListener('click', () => elements.settingsDialog.showModal());
+  byId('open-settings').addEventListener('click', () => {
+    if (state.config.personalSetupEnabled) {
+      elements.personalApiSetup.open = true;
+      elements.personalApiSetup.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      elements.settingsDialog.showModal();
+    }
+  });
   byId('close-settings').addEventListener('click', () => elements.settingsDialog.close());
   elements.settingsDialog.addEventListener('click', (event) => {
     if (event.target === elements.settingsDialog) elements.settingsDialog.close();

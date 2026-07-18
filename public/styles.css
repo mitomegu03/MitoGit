@@ -232,6 +232,12 @@ main {
   font-weight: 800;
 }
 
+.route-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -355,6 +361,7 @@ gmp-place-autocomplete {
 }
 
 .location-button {
+  align-self: flex-end;
   border-radius: 12px;
   background: var(--panel-soft);
   color: var(--cyan);
@@ -364,7 +371,7 @@ gmp-place-autocomplete {
 .swap-button {
   width: 32px;
   height: 32px;
-  margin: 4px 47px 4px auto;
+  margin: 5px auto;
   border-radius: 50%;
   background: var(--panel-soft);
   color: #9eb7ef;
@@ -824,17 +831,24 @@ dialog::backdrop {
   font-weight: 700;
 }
 
-.personal-api-setup {
-  padding: 14px 0 2px;
-  border-top: 1px solid var(--line);
+.quick-api-setup {
+  margin: 0 0 12px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgb(5 11 20 / 30%);
 }
 
-.personal-api-setup form {
+.quick-api-setup[open] {
+  padding-bottom: 12px;
+}
+
+.quick-api-setup form {
   display: grid;
   gap: 11px;
 }
 
-.personal-api-setup label {
+.quick-api-setup label {
   display: grid;
   gap: 6px;
   color: var(--muted);
@@ -842,12 +856,19 @@ dialog::backdrop {
   font-weight: 700;
 }
 
-.personal-api-setup .form-actions {
+.quick-api-setup .form-actions {
   flex-wrap: wrap;
 }
 
-.personal-api-setup .message {
+.quick-api-setup .message {
   margin-top: 0;
+}
+
+.setup-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: .7rem;
+  line-height: 1.5;
 }
 
 .dialog-note {

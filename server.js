@@ -354,7 +354,7 @@ async function serveStatic(request, response, pathname) {
     const extension = path.extname(filePath);
     response.writeHead(200, {
       ...securityHeaders,
-      'Cache-Control': extension === '.html' ? 'no-cache' : 'public, max-age=3600',
+      'Cache-Control': 'no-cache',
       'Content-Type': mimeTypes[extension] || 'application/octet-stream',
     });
     response.end(request.method === 'HEAD' ? undefined : content);

@@ -40,8 +40,31 @@
     <section class="panel route-panel" aria-label="ルート検索">
       <div class="route-toolbar">
         <span class="route-label">ルート検索</span>
-        <span id="maps-status" class="status-badge">接続確認中</span>
+        <div class="route-toolbar-actions">
+          <button id="demo-sample" class="text-button hidden" type="button">サンプルで試す</button>
+          <span id="maps-status" class="status-badge">接続確認中</span>
+        </div>
       </div>
+
+      <details id="personal-api-setup" class="quick-api-setup hidden">
+        <summary>APIキーを設定</summary>
+        <form id="api-config-form">
+          <label>
+            Google Maps APIキー
+            <input id="google-api-key" type="password" autocomplete="off" placeholder="AIza…">
+          </label>
+          <label>
+            Gemini APIキー
+            <input id="gemini-api-key" type="password" autocomplete="off" placeholder="AIza…">
+          </label>
+          <div class="form-actions">
+            <button class="secondary-button" type="submit">保存して反映</button>
+            <button id="clear-api-config" class="ghost-button" type="button">一時設定を削除</button>
+          </div>
+          <p id="api-config-message" class="message" role="status" aria-live="polite"></p>
+          <p class="setup-note">キーはブラウザに保存されず、サーバー再起動時に消去されます。</p>
+        </form>
+      </details>
 
       <div id="favorite-place-chips" class="chip-row" aria-label="お気に入りの場所"></div>
 
@@ -214,24 +237,7 @@
     </div>
     <div class="connection-row"><span>Google Maps</span><span id="maps-config-status" class="status-badge">確認中</span></div>
     <div class="connection-row"><span>Gemini</span><span id="gemini-config-status" class="status-badge">確認中</span></div>
-    <div id="personal-api-setup" class="personal-api-setup hidden">
-      <form id="api-config-form">
-        <label>
-          Google Maps APIキー
-          <input id="google-api-key" type="password" autocomplete="off" placeholder="AIza…">
-        </label>
-        <label>
-          Gemini APIキー
-          <input id="gemini-api-key" type="password" autocomplete="off" placeholder="AIza…">
-        </label>
-        <div class="form-actions">
-          <button class="secondary-button" type="submit">保存して反映</button>
-          <button id="clear-api-config" class="ghost-button" type="button">一時設定を削除</button>
-        </div>
-        <p id="api-config-message" class="message" role="status" aria-live="polite"></p>
-      </form>
-    </div>
-    <p id="api-config-note" class="dialog-note">APIキーはサーバーの環境変数から読み込みます。</p>
+    <p id="api-config-note" class="dialog-note">個人用API設定はルート検索画面から入力できます。</p>
   </dialog>
 
   <template id="empty-state-template">

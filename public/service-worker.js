@@ -1,4 +1,4 @@
-const CACHE_NAME = 'route-concierge-shell-v1';
+const CACHE_NAME = 'route-concierge-shell-v2';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -31,7 +31,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    fetch(event.request)
+    fetch(event.request, { cache: 'no-cache' })
       .then((response) => {
         if (response.ok) {
           const copy = response.clone();

@@ -24,6 +24,9 @@ const state = {
   mapPolylines: [],
   mapMarkers: [],
   mapRenderId: 0,
+  drivingDepartureTime: null,
+  searchId: 0,
+  aiAbortController: null,
   RouteClass: null,
 };
 
@@ -403,26 +406,32 @@ async function computeRoutes(input) {
   let routes = result.routes || [];
 
   if (elements.travelMode.value !== 'DRIVING' || input.timeType !== 'arrival') {
-    return routes;
+    return { routes, drivingDepartureTime: null };
   }
 
   const bufferMs = (Number(elements.bufferMinutes.value) || 0) * 60_000;
-  for (let attempt = 0; attempt < 2 && routes[0]; attempt += 1) {
+  let queriedDepartureTime = null;
+  for (let attempt = 0; attempt < 3 && routes[0]; attempt += 1) {
     const durationMs = Number(routes[0].durationMillis);
     if (!durationMs) break;
     const estimatedDeparture = new Date(input.scheduledAt.getTime() - durationMs - bufferMs);
-    if (estimatedDeparture.getTime() <= Date.now()) break;
-    const previousDeparture = request.departureTime?.getTime();
+    if (estimatedDeparture.getTime() <= Date.now()) {
+      throw new Error('指定した到着時刻に間に合う出発時刻を計算できません。到着時刻を遅らせてください。');
+    }
+    if (
+      queriedDepartureTime
+      && Math.abs(queriedDepartureTime.getTime() - estimatedDeparture.getTime()) < 60_000
+    ) {
+      break;
+    }
     request.departureTime = estimatedDeparture;
     request.routingPreference = 'TRAFFIC_AWARE';
     result = await state.RouteClass.computeRoutes(request);
     routes = result.routes || [];
-    if (previousDeparture && Math.abs(previousDeparture - estimatedDeparture.getTime()) < 60_000) {
-      break;
-    }
+    queriedDepartureTime = estimatedDeparture;
   }
 
-  return routes;
+  return { routes, drivingDepartureTime: queriedDepartureTime };
 }
 
 async function searchRoutes() {
@@ -432,13 +441,16 @@ async function searchRoutes() {
   }
 
   elements.searchRoute.disabled = true;
+  const searchId = ++state.searchId;
+  state.aiAbortController?.abort();
   showMessage('正確な経路情報を調べています…');
   try {
     const input = validateRouteInput();
-    const routes = await computeRoutes(input);
+    const { routes, drivingDepartureTime } = await computeRoutes(input);
     if (routes.length === 0) throw new Error('条件に合うルートが見つかりませんでした。');
 
     state.currentRoutes = routes;
+    state.drivingDepartureTime = drivingDepartureTime;
     state.routeSummaries = routes.map((route, index) => (
       summarizeGoogleRoute(route, index, elements.travelMode.value)
     ));
@@ -456,7 +468,7 @@ async function searchRoutes() {
     elements.timelineSection.classList.remove('hidden');
     elements.aiSection.classList.remove('hidden');
     showMessage(`${routes.length}件の候補を比較しました。時刻はGoogle Mapsの経路情報から計算しています。`);
-    void requestAiRecommendation(input);
+    void requestAiRecommendation(input, searchId);
   } catch (error) {
     const message = error instanceof Error ? error.message : '経路検索に失敗しました。';
     showMessage(`検索できませんでした：${message}`, true);
@@ -527,19 +539,42 @@ function selectRoute(index) {
 
 function renderTimeline(route, input) {
   const useTransitSchedule = elements.travelMode.value === 'TRANSIT';
+  const useDrivingArrivalTime = (
+    elements.travelMode.value === 'DRIVING'
+    && input.timeType === 'arrival'
+    && state.drivingDepartureTime
+  );
+  const actualDeparture = useTransitSchedule
+    ? route.departureTime
+    : useDrivingArrivalTime
+      ? state.drivingDepartureTime
+      : null;
+  const actualArrival = useTransitSchedule
+    ? route.arrivalTime
+    : useDrivingArrivalTime
+      ? new Date(state.drivingDepartureTime.getTime() + route.durationMinutes * 60_000)
+      : null;
   const timeline = calculateTimeline({
     scheduledAt: input.scheduledAt,
     timeType: input.timeType,
     durationMinutes: route.durationMinutes,
     preparationMinutes: Number(elements.preparationMinutes.value) || 0,
     bufferMinutes: Number(elements.bufferMinutes.value) || 0,
-    actualDeparture: useTransitSchedule ? route.departureTime : null,
-    actualArrival: useTransitSchedule ? route.arrivalTime : null,
+    actualDeparture,
+    actualArrival,
   });
   const items = [
     ['準備開始', formatTime(timeline.preparationStart), '身支度をスタート'],
     ['家を出る', formatTime(timeline.recommendedDeparture), '推奨出発時刻'],
-    ['到着見込み', formatTime(timeline.expectedArrival), timeline.bufferMinutes ? `${timeline.bufferMinutes}分の余裕` : '予定どおり'],
+    [
+      '到着見込み',
+      formatTime(timeline.expectedArrival),
+      timeline.lateMinutes
+        ? `希望より${timeline.lateMinutes}分遅い見込み`
+        : timeline.bufferMinutes
+          ? `${timeline.bufferMinutes}分の余裕`
+          : '予定どおり',
+    ],
   ];
   elements.timeline.replaceChildren();
   items.forEach(([label, value, note]) => {
@@ -598,7 +633,7 @@ function preferenceLabel(value) {
   return labels[value] || '負担の少なさ';
 }
 
-async function requestAiRecommendation(input) {
+async function requestAiRecommendation(input, searchId) {
   if (!state.config.geminiConfigured) {
     elements.aiCautions.append(
       createElement('li', { text: 'Gemini未設定のため、現在はルールベースで比較しています。' }),
@@ -608,6 +643,7 @@ async function requestAiRecommendation(input) {
 
   try {
     const abortController = new AbortController();
+    state.aiAbortController = abortController;
     const timeout = window.setTimeout(() => abortController.abort(), 13_000);
     const response = await fetch('/api/concierge', {
       method: 'POST',
@@ -623,6 +659,7 @@ async function requestAiRecommendation(input) {
     }).finally(() => window.clearTimeout(timeout));
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'AIの提案を取得できませんでした。');
+    if (searchId !== state.searchId) return;
 
     elements.aiSummary.textContent = result.summary;
     elements.aiReason.textContent = result.reason;
@@ -634,11 +671,16 @@ async function requestAiRecommendation(input) {
       createElement('li', { text: 'AIはGoogle Mapsの候補を説明しています。運休や遅延を予測するものではありません。' }),
     );
   } catch (error) {
+    if (searchId !== state.searchId || (error instanceof Error && error.name === 'AbortError')) {
+      return;
+    }
     elements.aiCautions.append(
       createElement('li', {
         text: `AI説明を取得できなかったため、計算結果を表示しています。${error instanceof Error ? `（${error.message}）` : ''}`,
       }),
     );
+  } finally {
+    if (searchId === state.searchId) state.aiAbortController = null;
   }
 }
 

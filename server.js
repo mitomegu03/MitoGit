@@ -19,10 +19,10 @@ const mimeTypes = {
 const securityHeaders = {
   'Content-Security-Policy': [
     "default-src 'self'",
-    "script-src 'self' https://maps.googleapis.com https://maps.gstatic.com",
+    "script-src 'self' 'unsafe-eval' blob: https://maps.googleapis.com https://maps.gstatic.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: blob: https://*.googleapis.com https://*.gstatic.com https://*.google.com https://*.googleusercontent.com",
-    "connect-src 'self' https://maps.googleapis.com https://maps.gstatic.com https://*.googleapis.com https://*.gstatic.com https://api.open-meteo.com",
+    "connect-src 'self' data: blob: https://maps.googleapis.com https://maps.gstatic.com https://*.googleapis.com https://*.gstatic.com https://*.google.com https://api.open-meteo.com",
     "font-src 'self' https://fonts.gstatic.com",
     "frame-src https://*.google.com",
     "worker-src 'self' blob:",
@@ -100,12 +100,20 @@ function isRateLimited(request) {
     }
   }
 
-  const forwarded = process.env.TRUST_PROXY === '1'
-    ? request.headers['x-forwarded-for']
-    : '';
-  const ip = cleanText(Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(',')[0])
-    || request.socket.remoteAddress
-    || 'unknown';
+  const remoteAddress = cleanText(request.socket.remoteAddress) || 'unknown';
+  const trustedProxies = new Set(
+    String(process.env.TRUSTED_PROXY_IPS || '')
+      .split(',')
+      .map((address) => address.trim())
+      .filter(Boolean),
+  );
+  const forwarded = request.headers['x-forwarded-for'];
+  const forwardedAddresses = (
+    Array.isArray(forwarded) ? forwarded : String(forwarded || '').split(',')
+  ).map((address) => cleanText(address)).filter(Boolean);
+  const chain = [...forwardedAddresses, remoteAddress];
+  while (chain.length > 1 && trustedProxies.has(chain[chain.length - 1])) chain.pop();
+  const ip = chain[chain.length - 1];
   const current = rateLimits.get(ip);
 
   if (!current || current.resetAt <= now) {

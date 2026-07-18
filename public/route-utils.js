@@ -26,13 +26,15 @@ export function calculateTimeline({
   const bufferMs = Math.max(0, bufferMinutes) * 60_000;
 
   if (actualDeparture instanceof Date && actualArrival instanceof Date) {
+    const scheduleDifferenceMinutes = timeType === 'arrival'
+      ? Math.floor((scheduledAt.getTime() - actualArrival.getTime()) / 60_000)
+      : 0;
     return {
       preparationStart: new Date(actualDeparture.getTime() - preparationMs),
       recommendedDeparture: actualDeparture,
       expectedArrival: actualArrival,
-      bufferMinutes: timeType === 'arrival'
-        ? Math.max(0, Math.floor((scheduledAt.getTime() - actualArrival.getTime()) / 60_000))
-        : 0,
+      bufferMinutes: Math.max(0, scheduleDifferenceMinutes),
+      lateMinutes: Math.max(0, -scheduleDifferenceMinutes),
     };
   }
 
@@ -43,6 +45,7 @@ export function calculateTimeline({
       recommendedDeparture: departure,
       expectedArrival: new Date(departure.getTime() + durationMs),
       bufferMinutes: Math.max(0, bufferMinutes),
+      lateMinutes: 0,
     };
   }
 
@@ -51,6 +54,7 @@ export function calculateTimeline({
     recommendedDeparture: new Date(scheduledAt),
     expectedArrival: new Date(scheduledAt.getTime() + durationMs),
     bufferMinutes: 0,
+    lateMinutes: 0,
   };
 }
 

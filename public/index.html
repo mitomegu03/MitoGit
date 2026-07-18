@@ -8,8 +8,8 @@
   <title>AIルートコンシェルジュ</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/styles.css?v=3">
-  <script type="module" src="/app.js?v=3"></script>
+  <link rel="stylesheet" href="/styles.css?v=4">
+  <script type="module" src="/app.js?v=4"></script>
 </head>
 <body>
   <header class="app-header">
@@ -37,7 +37,7 @@
       <div id="weather-forecast" class="weather-forecast" aria-live="polite"></div>
     </section>
 
-    <section class="panel route-panel" aria-label="ルート検索">
+    <section id="route-panel" class="panel route-panel" aria-label="ルート検索">
       <div class="route-toolbar">
         <span class="route-label">ルート検索</span>
         <div class="route-toolbar-actions">
@@ -46,109 +46,99 @@
         </div>
       </div>
 
-      <details id="personal-api-setup" class="quick-api-setup hidden">
-        <summary>APIキーを設定</summary>
-        <form id="api-config-form">
-          <label>
-            Google Maps APIキー
-            <input id="google-api-key" type="password" autocomplete="off" placeholder="AIza…">
-          </label>
-          <label>
-            Gemini APIキー
-            <input id="gemini-api-key" type="password" autocomplete="off" placeholder="AIza…">
-          </label>
-          <div class="form-actions">
-            <button class="secondary-button" type="submit">保存して反映</button>
-            <button id="clear-api-config" class="ghost-button" type="button">一時設定を削除</button>
-          </div>
-          <p id="api-config-message" class="message" role="status" aria-live="polite"></p>
-          <p class="setup-note">キーはブラウザに保存されず、サーバー再起動時に消去されます。</p>
-        </form>
-      </details>
+      <div id="compact-search-summary" class="compact-search-summary hidden">
+        <div>
+          <strong id="compact-route-text"></strong>
+          <span id="compact-time-text"></span>
+        </div>
+        <button id="edit-search" class="ghost-button" type="button">条件変更</button>
+      </div>
 
-      <div id="favorite-place-chips" class="chip-row" aria-label="お気に入りの場所"></div>
+      <div id="route-form-body">
+        <div id="favorite-place-chips" class="chip-row" aria-label="お気に入りの場所"></div>
 
-      <div class="location-stack">
-        <div class="location-row">
-          <span class="location-dot origin-dot" aria-hidden="true"></span>
-          <div class="place-field">
-            <label for="origin-fallback">出発地</label>
-            <div id="origin-autocomplete" class="autocomplete-slot"></div>
-            <input id="origin-fallback" class="fallback-input hidden" type="text" placeholder="出発地を入力">
+        <div class="location-stack">
+          <div class="location-row">
+            <span class="location-dot origin-dot" aria-hidden="true"></span>
+            <div class="place-field">
+              <label for="origin-fallback">出発地</label>
+              <div id="origin-autocomplete" class="autocomplete-slot"></div>
+              <input id="origin-fallback" class="fallback-input hidden" type="text" placeholder="出発地を入力">
+            </div>
+            <button id="current-location" class="location-button" type="button" aria-label="現在地を出発地に設定">◎</button>
           </div>
-          <button id="current-location" class="location-button" type="button" aria-label="現在地を出発地に設定">◎</button>
+
+          <button id="swap-locations" class="swap-button" type="button" aria-label="出発地と目的地を入れ替える">⇅</button>
+
+          <div class="location-row">
+            <span class="location-dot destination-dot" aria-hidden="true"></span>
+            <div class="place-field">
+              <label for="destination-fallback">目的地</label>
+              <div id="destination-autocomplete" class="autocomplete-slot"></div>
+              <input id="destination-fallback" class="fallback-input hidden" type="text" placeholder="目的地を入力">
+            </div>
+            <span class="location-button-placeholder" aria-hidden="true"></span>
+          </div>
         </div>
 
-        <button id="swap-locations" class="swap-button" type="button" aria-label="出発地と目的地を入れ替える">⇅</button>
-
-        <div class="location-row">
-          <span class="location-dot destination-dot" aria-hidden="true"></span>
-          <div class="place-field">
-            <label for="destination-fallback">目的地</label>
-            <div id="destination-autocomplete" class="autocomplete-slot"></div>
-            <input id="destination-fallback" class="fallback-input hidden" type="text" placeholder="目的地を入力">
-          </div>
-          <span class="location-button-placeholder" aria-hidden="true"></span>
+        <div class="form-grid two-columns schedule-grid">
+          <label>
+            日付
+            <input id="commute-date" type="date" required>
+          </label>
+          <label>
+            時刻
+            <input id="commute-time" type="time" required>
+          </label>
         </div>
-      </div>
 
-      <div class="form-grid two-columns schedule-grid">
-        <label>
-          日付
-          <input id="commute-date" type="date" required>
-        </label>
-        <label>
-          時刻
-          <input id="commute-time" type="time" required>
-        </label>
-      </div>
+        <fieldset class="segmented-control">
+          <legend>時刻の指定方法</legend>
+          <label><input type="radio" name="time-type" value="arrival" checked><span>到着希望</span></label>
+          <label><input type="radio" name="time-type" value="departure"><span>出発希望</span></label>
+        </fieldset>
 
-      <fieldset class="segmented-control">
-        <legend>時刻の指定方法</legend>
-        <label><input type="radio" name="time-type" value="arrival" checked><span>到着希望</span></label>
-        <label><input type="radio" name="time-type" value="departure"><span>出発希望</span></label>
-      </fieldset>
-
-      <div class="form-grid two-columns">
-        <label>
-          移動手段
-          <select id="travel-mode">
-            <option value="TRANSIT">公共交通</option>
-            <option value="DRIVING">車</option>
-            <option value="WALKING">徒歩</option>
-            <option value="BICYCLING">自転車</option>
-          </select>
-        </label>
-        <label>
-          重視すること
-          <select id="route-preference">
-            <option value="balanced">負担の少なさ</option>
-            <option value="fastest">速さ</option>
-            <option value="fewer-transfers">乗換の少なさ</option>
-            <option value="less-walking">徒歩の少なさ</option>
-          </select>
-        </label>
-      </div>
-
-      <details class="advanced-options">
-        <summary>準備時間と余裕を調整</summary>
         <div class="form-grid two-columns">
           <label>
-            身支度
-            <span class="input-with-unit"><input id="preparation-minutes" type="number" min="0" max="180" value="20"><span>分</span></span>
+            移動手段
+            <select id="travel-mode">
+              <option value="TRANSIT">公共交通</option>
+              <option value="DRIVING">車</option>
+              <option value="WALKING">徒歩</option>
+              <option value="BICYCLING">自転車</option>
+            </select>
           </label>
           <label>
-            到着の余裕
-            <span class="input-with-unit"><input id="buffer-minutes" type="number" min="0" max="120" value="10"><span>分</span></span>
+            重視すること
+            <select id="route-preference">
+              <option value="balanced">負担の少なさ</option>
+              <option value="fastest">速さ</option>
+              <option value="fewer-transfers">乗換の少なさ</option>
+              <option value="less-walking">徒歩の少なさ</option>
+            </select>
           </label>
         </div>
-      </details>
 
-      <button id="search-route" class="primary-button" type="button">
-        <span id="search-route-label">最適なルートを調べる</span>
-        <span aria-hidden="true">→</span>
-      </button>
-      <p id="route-message" class="message" role="status" aria-live="polite"></p>
+        <details class="advanced-options">
+          <summary>準備時間と余裕を調整</summary>
+          <div class="form-grid two-columns">
+            <label>
+              身支度
+              <span class="input-with-unit"><input id="preparation-minutes" type="number" min="0" max="180" value="20"><span>分</span></span>
+            </label>
+            <label>
+              到着の余裕
+              <span class="input-with-unit"><input id="buffer-minutes" type="number" min="0" max="120" value="10"><span>分</span></span>
+            </label>
+          </div>
+        </details>
+
+        <button id="search-route" class="primary-button" type="button">
+          <span id="search-route-label">最適なルートを調べる</span>
+          <span aria-hidden="true">→</span>
+        </button>
+        <p id="route-message" class="message" role="status" aria-live="polite"></p>
+      </div>
     </section>
 
     <section id="timeline-section" class="panel hidden" aria-labelledby="timeline-heading">
@@ -237,7 +227,25 @@
     </div>
     <div class="connection-row"><span>Google Maps</span><span id="maps-config-status" class="status-badge">確認中</span></div>
     <div class="connection-row"><span>Gemini</span><span id="gemini-config-status" class="status-badge">確認中</span></div>
-    <p id="api-config-note" class="dialog-note">個人用API設定はルート検索画面から入力できます。</p>
+    <div id="personal-api-setup" class="settings-api-setup hidden">
+      <form id="api-config-form">
+        <label>
+          Google Maps APIキー
+          <input id="google-api-key" type="password" autocomplete="off" placeholder="AIza…">
+        </label>
+        <label>
+          Gemini APIキー
+          <input id="gemini-api-key" type="password" autocomplete="off" placeholder="AIza…">
+        </label>
+        <div class="form-actions">
+          <button class="secondary-button" type="submit">保存して反映</button>
+          <button id="clear-api-config" class="ghost-button" type="button">一時設定を削除</button>
+        </div>
+        <p id="api-config-message" class="message" role="status" aria-live="polite"></p>
+        <p class="setup-note">キーはブラウザに保存されず、サーバー再起動時に消去されます。</p>
+      </form>
+    </div>
+    <p id="api-config-note" class="dialog-note">APIキーはサーバーの環境変数から読み込みます。</p>
   </dialog>
 
   <template id="empty-state-template">

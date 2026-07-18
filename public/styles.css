@@ -238,6 +238,53 @@ main {
   gap: 5px;
 }
 
+.route-panel.results-mode {
+  position: sticky;
+  z-index: 12;
+  top: 76px;
+  padding-block: 12px;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 32%);
+}
+
+.route-panel.results-mode .route-toolbar {
+  display: none;
+}
+
+.compact-search-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.compact-search-summary > div {
+  min-width: 0;
+}
+
+.compact-search-summary strong,
+.compact-search-summary span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compact-search-summary strong {
+  font-size: .9rem;
+}
+
+.compact-search-summary span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: .72rem;
+}
+
+.compact-search-summary .ghost-button {
+  flex: 0 0 auto;
+  min-height: 34px;
+  font-size: .74rem;
+}
+
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -700,6 +747,7 @@ summary {
 }
 
 .ai-panel {
+  scroll-margin-top: 148px;
   border-color: rgb(91 140 255 / 35%);
   background:
     radial-gradient(circle at 100% 0, rgb(91 140 255 / 13%), transparent 18rem),
@@ -831,24 +879,17 @@ dialog::backdrop {
   font-weight: 700;
 }
 
-.quick-api-setup {
-  margin: 0 0 12px;
-  padding: 0 12px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: rgb(5 11 20 / 30%);
+.settings-api-setup {
+  padding: 14px 0 2px;
+  border-top: 1px solid var(--line);
 }
 
-.quick-api-setup[open] {
-  padding-bottom: 12px;
-}
-
-.quick-api-setup form {
+.settings-api-setup form {
   display: grid;
   gap: 11px;
 }
 
-.quick-api-setup label {
+.settings-api-setup label {
   display: grid;
   gap: 6px;
   color: var(--muted);
@@ -856,11 +897,11 @@ dialog::backdrop {
   font-weight: 700;
 }
 
-.quick-api-setup .form-actions {
+.settings-api-setup .form-actions {
   flex-wrap: wrap;
 }
 
-.quick-api-setup .message {
+.settings-api-setup .message {
   margin-top: 0;
 }
 

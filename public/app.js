@@ -6,7 +6,7 @@ import {
   summarizeGoogleRoute,
   weatherIcon,
   weatherLabel,
-} from './route-utils.js?v=3';
+} from './route-utils.js?v=4';
 
 const STORAGE_KEYS = {
   places: 'route-concierge:places:v1',
@@ -130,7 +130,6 @@ async function loadConfiguration() {
     state.config = await response.json();
     if (state.config.personalSetupEnabled) {
       elements.personalApiSetup.classList.remove('hidden');
-      elements.personalApiSetup.open = !state.config.mapsConfigured;
       elements.apiConfigNote.textContent = '個人用の一時設定です。キーはブラウザに保存されず、サーバーを再起動すると消去されます。';
     }
 
@@ -249,6 +248,36 @@ function runDemoSample() {
   setLocationValue('origin', '横浜駅');
   setLocationValue('destination', '東京駅');
   runDemoSearch();
+}
+
+function enterResultsMode(input) {
+  const timeTypeLabel = input.timeType === 'arrival' ? '到着' : '出発';
+  const modeLabel = elements.travelMode.selectedOptions[0]?.textContent || '';
+  const dateLabel = new Intl.DateTimeFormat('ja-JP', {
+    month: 'numeric',
+    day: 'numeric',
+    weekday: 'short',
+  }).format(input.scheduledAt);
+
+  elements.compactRouteText.textContent = `${input.origin} → ${input.destination}`;
+  elements.compactTimeText.textContent = `${dateLabel} ${formatTime(input.scheduledAt)} ${timeTypeLabel}・${modeLabel}`;
+  elements.routeFormBody.classList.add('hidden');
+  elements.compactSearchSummary.classList.remove('hidden');
+  elements.routePanel.classList.add('results-mode');
+
+  window.requestAnimationFrame(() => {
+    elements.aiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
+function exitResultsMode() {
+  elements.routePanel.classList.remove('results-mode');
+  elements.compactSearchSummary.classList.add('hidden');
+  elements.routeFormBody.classList.remove('hidden');
+  elements.aiSection.classList.add('hidden');
+  elements.timelineSection.classList.add('hidden');
+  elements.resultsSection.classList.add('hidden');
+  elements.routePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function getLocationValue(type) {
@@ -494,6 +523,7 @@ async function searchRoutes() {
     elements.resultsSection.classList.remove('hidden');
     elements.timelineSection.classList.remove('hidden');
     elements.aiSection.classList.remove('hidden');
+    enterResultsMode(input);
     showMessage(`${routes.length}件の候補を比較しました。時刻はGoogle Mapsの経路情報から計算しています。`);
     void requestAiRecommendation(input, searchId);
   } catch (error) {
@@ -586,6 +616,7 @@ function runDemoSearch() {
     elements.resultsSection.classList.remove('hidden');
     elements.timelineSection.classList.remove('hidden');
     elements.aiSection.classList.remove('hidden');
+    enterResultsMode(input);
     showMessage('デモ結果を表示しています。API設定後は実際の経路に切り替わります。');
   } catch (error) {
     showMessage(error instanceof Error ? error.message : 'デモを表示できませんでした。', true);
@@ -1014,6 +1045,9 @@ function cacheElements() {
     cancelRouteEdit: byId('cancel-route-edit'),
     commuteDate: byId('commute-date'),
     commuteTime: byId('commute-time'),
+    compactRouteText: byId('compact-route-text'),
+    compactSearchSummary: byId('compact-search-summary'),
+    compactTimeText: byId('compact-time-text'),
     destinationAutocomplete: byId('destination-autocomplete'),
     destinationFallback: byId('destination-fallback'),
     demoSample: byId('demo-sample'),
@@ -1036,7 +1070,9 @@ function cacheElements() {
     personalApiSetup: byId('personal-api-setup'),
     preparationMinutes: byId('preparation-minutes'),
     resultsSection: byId('results-section'),
+    routeFormBody: byId('route-form-body'),
     routeMessage: byId('route-message'),
+    routePanel: byId('route-panel'),
     routeDataSource: byId('route-data-source'),
     routePreference: byId('route-preference'),
     routeResults: byId('route-results'),
@@ -1062,6 +1098,7 @@ function cacheElements() {
 function attachEvents() {
   byId('swap-locations').addEventListener('click', swapLocations);
   elements.demoSample.addEventListener('click', runDemoSample);
+  byId('edit-search').addEventListener('click', exitResultsMode);
   byId('current-location').addEventListener('click', useCurrentLocation);
   elements.loadWeather.addEventListener('click', loadWeather);
   elements.searchRoute.addEventListener('click', searchRoutes);
@@ -1071,14 +1108,7 @@ function attachEvents() {
   byId('clear-api-config').addEventListener('click', clearPersonalApiConfig);
   elements.cancelPlaceEdit.addEventListener('click', resetPlaceForm);
   elements.cancelRouteEdit.addEventListener('click', resetRouteForm);
-  byId('open-settings').addEventListener('click', () => {
-    if (state.config.personalSetupEnabled) {
-      elements.personalApiSetup.open = true;
-      elements.personalApiSetup.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      elements.settingsDialog.showModal();
-    }
-  });
+  byId('open-settings').addEventListener('click', () => elements.settingsDialog.showModal());
   byId('close-settings').addEventListener('click', () => elements.settingsDialog.close());
   elements.settingsDialog.addEventListener('click', (event) => {
     if (event.target === elements.settingsDialog) elements.settingsDialog.close();
@@ -1092,6 +1122,7 @@ async function initialize() {
   attachEvents();
   renderPlaces();
   renderSavedRoutes();
+  elements.routePanel.insertAdjacentElement('afterend', elements.aiSection);
   await loadConfiguration();
 
   if ('serviceWorker' in navigator) {

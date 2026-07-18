@@ -1,0 +1,18 @@
+{
+  "name": "AIルートコンシェルジュ",
+  "short_name": "ルートAI",
+  "description": "速さだけでなく、徒歩や乗換の負担も考えるルート検索",
+  "lang": "ja",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

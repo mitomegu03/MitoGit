@@ -150,7 +150,7 @@ main {
 }
 
 .panel {
-  padding: 19px;
+  padding: 17px;
   background: linear-gradient(145deg, rgb(20 31 49 / 98%), rgb(15 24 40 / 98%));
 }
 
@@ -216,7 +216,20 @@ main {
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
+}
+
+.route-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.route-label {
+  color: #b9c8df;
+  font-size: .82rem;
+  font-weight: 800;
 }
 
 .status-badge {
@@ -244,12 +257,22 @@ main {
   background: rgb(255 125 141 / 8%);
 }
 
+.status-badge.demo {
+  border-color: rgb(255 210 118 / 30%);
+  color: #ffd276;
+  background: rgb(255 210 118 / 8%);
+}
+
 .chip-row {
   display: flex;
   overflow-x: auto;
   gap: 7px;
-  margin: -4px 0 14px;
+  margin: 0 0 12px;
   scrollbar-width: none;
+}
+
+.chip-row:empty {
+  display: none;
 }
 
 .chip {
@@ -265,8 +288,8 @@ main {
 
 .location-stack {
   position: relative;
-  margin-bottom: 18px;
-  padding: 14px;
+  margin-bottom: 14px;
+  padding: 12px;
   border: 1px solid var(--line);
   border-radius: 16px;
   background: rgb(5 11 20 / 38%);
@@ -299,7 +322,6 @@ main {
   flex: 1;
 }
 
-.place-field > label,
 .form-grid > label,
 .saved-form > label {
   display: grid;
@@ -309,8 +331,16 @@ main {
   font-weight: 700;
 }
 
+.place-field > label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: .74rem;
+  font-weight: 700;
+}
+
 .autocomplete-slot {
-  min-height: 43px;
+  min-height: 44px;
 }
 
 gmp-place-autocomplete {
@@ -332,9 +362,9 @@ gmp-place-autocomplete {
 }
 
 .swap-button {
-  width: 34px;
-  height: 34px;
-  margin: 5px 48px 5px auto;
+  width: 32px;
+  height: 32px;
+  margin: 4px 47px 4px auto;
   border-radius: 50%;
   background: var(--panel-soft);
   color: #9eb7ef;
@@ -358,8 +388,8 @@ input::placeholder {
 
 .form-grid {
   display: grid;
-  gap: 12px;
-  margin-bottom: 14px;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 .two-columns {
@@ -369,7 +399,7 @@ input::placeholder {
 .segmented-control {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  margin: 0 0 14px;
+  margin: 0 0 12px;
   padding: 3px;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -412,7 +442,7 @@ input::placeholder {
 }
 
 .advanced-options {
-  margin: 3px 0 16px;
+  margin: 2px 0 14px;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
@@ -499,6 +529,10 @@ summary {
   font-size: .8rem;
 }
 
+.message:empty {
+  display: none;
+}
+
 .message.error {
   color: var(--danger);
 }
@@ -537,11 +571,14 @@ summary {
 }
 
 .route-card {
+  width: 100%;
   padding: 14px;
   border: 1px solid var(--line);
   border-radius: 15px;
   background: var(--panel-soft);
+  color: var(--text);
   cursor: pointer;
+  text-align: left;
   transition: border-color .18s, transform .18s;
 }
 
@@ -635,6 +672,7 @@ summary {
 }
 
 .map {
+  display: grid;
   width: 100%;
   height: 280px;
   margin-top: 14px;
@@ -642,6 +680,13 @@ summary {
   border: 1px solid var(--line);
   border-radius: 15px;
   background: #0c1421;
+  place-items: center;
+}
+
+.map-placeholder {
+  margin: 0;
+  color: var(--muted);
+  font-size: .78rem;
 }
 
 .ai-panel {
@@ -776,6 +821,32 @@ dialog::backdrop {
   font-weight: 700;
 }
 
+.personal-api-setup {
+  padding: 14px 0 2px;
+  border-top: 1px solid var(--line);
+}
+
+.personal-api-setup form {
+  display: grid;
+  gap: 11px;
+}
+
+.personal-api-setup label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: .76rem;
+  font-weight: 700;
+}
+
+.personal-api-setup .form-actions {
+  flex-wrap: wrap;
+}
+
+.personal-api-setup .message {
+  margin-top: 0;
+}
+
 .dialog-note {
   margin: 14px 0 0;
   color: var(--muted);
@@ -790,6 +861,15 @@ dialog::backdrop {
 @media (max-width: 520px) {
   .two-columns {
     grid-template-columns: 1fr;
+  }
+
+  .schedule-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .schedule-grid input {
+    padding-inline: 9px;
+    font-size: .86rem;
   }
 
   .timeline {

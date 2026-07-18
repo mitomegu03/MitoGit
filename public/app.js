@@ -27,6 +27,7 @@ const state = {
   drivingDepartureTime: null,
   searchId: 0,
   aiAbortController: null,
+  demoMode: false,
   RouteClass: null,
 };
 
@@ -46,7 +47,7 @@ function createElement(tag, options = {}) {
 
 function setStatus(element, text, status = '') {
   element.textContent = text;
-  element.classList.remove('ready', 'error');
+  element.classList.remove('ready', 'error', 'demo');
   if (status) element.classList.add(status);
 }
 
@@ -127,6 +128,10 @@ async function loadConfiguration() {
     const response = await fetch('/api/config');
     if (!response.ok) throw new Error('設定を取得できませんでした。');
     state.config = await response.json();
+    if (state.config.personalSetupEnabled) {
+      elements.personalApiSetup.classList.remove('hidden');
+      elements.apiConfigNote.textContent = '個人用の一時設定です。キーはブラウザに保存されず、サーバーを再起動すると消去されます。';
+    }
 
     setStatus(
       elements.mapsConfigStatus,
@@ -142,12 +147,10 @@ async function loadConfiguration() {
     if (state.config.mapsConfigured && state.config.googleMapsApiKey) {
       await loadGoogleMaps(state.config.googleMapsApiKey);
     } else {
-      enableFallbackInputs();
-      setStatus(elements.mapsStatus, 'API未設定', 'error');
-      showMessage('Google Maps APIをサーバーに設定すると経路検索を利用できます。', true);
+      enableDemoMode();
     }
   } catch (error) {
-    enableFallbackInputs();
+    enableDemoMode();
     setStatus(elements.mapsStatus, '接続エラー', 'error');
     showMessage(error instanceof Error ? error.message : '初期化に失敗しました。', true);
   }
@@ -204,6 +207,9 @@ async function initializeGoogleMaps() {
     fullscreenControl: false,
   });
 
+  state.demoMode = false;
+  elements.mapPlaceholder.classList.add('hidden');
+  elements.searchRouteLabel.textContent = '最適なルートを調べる';
   setStatus(elements.mapsStatus, '接続済み', 'ready');
 }
 
@@ -220,8 +226,20 @@ function attachPlaceSelection(autocomplete) {
 }
 
 function enableFallbackInputs() {
+  elements.originAutocomplete.classList.add('hidden');
+  elements.destinationAutocomplete.classList.add('hidden');
   elements.originFallback.classList.remove('hidden');
   elements.destinationFallback.classList.remove('hidden');
+}
+
+function enableDemoMode() {
+  state.demoMode = true;
+  enableFallbackInputs();
+  setStatus(elements.mapsStatus, 'デモ', 'demo');
+  elements.searchRouteLabel.textContent = 'デモ結果を表示';
+  elements.routeDataSource.textContent = 'デモデータ';
+  elements.mapPlaceholder.classList.remove('hidden');
+  showMessage('出発地と目的地を入力すると、API設定前でも完成イメージを確認できます。');
 }
 
 function getLocationValue(type) {
@@ -436,7 +454,7 @@ async function computeRoutes(input) {
 
 async function searchRoutes() {
   if (!state.RouteClass) {
-    showMessage('Google Mapsが利用できません。API設定を確認してください。', true);
+    runDemoSearch();
     return;
   }
 
@@ -472,6 +490,96 @@ async function searchRoutes() {
   } catch (error) {
     const message = error instanceof Error ? error.message : '経路検索に失敗しました。';
     showMessage(`検索できませんでした：${message}`, true);
+  } finally {
+    elements.searchRoute.disabled = false;
+  }
+}
+
+function demoRouteSummaries() {
+  const transit = elements.travelMode.value === 'TRANSIT';
+  const driving = elements.travelMode.value === 'DRIVING';
+  const walking = elements.travelMode.value === 'WALKING';
+  const durations = driving ? [34, 39, 31] : transit ? [42, 49, 46] : walking ? [48, 53, 45] : [28, 31, 26];
+  const stressScores = transit ? [38, 35, 52] : walking ? [58, 63, 55] : [31, 29, 27];
+  const stressLabels = stressScores.map((score) => (
+    score <= 35 ? '快適' : score <= 60 ? '標準' : '負担高め'
+  ));
+  return [
+    {
+      index: 0,
+      name: 'バランスルート',
+      durationMinutes: durations[0],
+      distanceText: '約12.4 km',
+      durationText: `${durations[0]}分`,
+      walkingMinutes: walking ? durations[0] : driving ? 1 : transit ? 7 : 0,
+      transfers: transit ? 1 : 0,
+      lines: [],
+      stressScore: stressScores[0],
+      stressLabel: stressLabels[0],
+      warnings: [],
+      departureTime: null,
+      arrivalTime: null,
+    },
+    {
+      index: 1,
+      name: transit ? '乗換少なめ' : 'ゆったりルート',
+      durationMinutes: durations[1],
+      distanceText: '約13.1 km',
+      durationText: `${durations[1]}分`,
+      walkingMinutes: walking ? durations[1] : driving ? 1 : transit ? 10 : 0,
+      transfers: 0,
+      lines: [],
+      stressScore: stressScores[1],
+      stressLabel: stressLabels[1],
+      warnings: [],
+      departureTime: null,
+      arrivalTime: null,
+    },
+    {
+      index: 2,
+      name: transit ? '徒歩少なめ' : '最短ルート',
+      durationMinutes: durations[2],
+      distanceText: '約11.8 km',
+      durationText: `${durations[2]}分`,
+      walkingMinutes: walking ? durations[2] : driving ? 1 : transit ? 3 : 0,
+      transfers: transit ? 2 : 0,
+      lines: [],
+      stressScore: stressScores[2],
+      stressLabel: stressLabels[2],
+      warnings: [],
+      departureTime: null,
+      arrivalTime: null,
+    },
+  ];
+}
+
+function runDemoSearch() {
+  elements.searchRoute.disabled = true;
+  try {
+    const input = validateRouteInput();
+    state.demoMode = true;
+    state.currentRoutes = [];
+    state.drivingDepartureTime = null;
+    state.routeSummaries = demoRouteSummaries();
+    state.recommendedIndex = chooseRecommendedRoute(
+      state.routeSummaries,
+      elements.routePreference.value,
+    );
+    state.selectedIndex = state.recommendedIndex;
+    renderRouteResults();
+    renderTimeline(state.routeSummaries[state.recommendedIndex], input);
+    renderMapRoute(state.recommendedIndex);
+    renderLocalRecommendation(state.routeSummaries[state.recommendedIndex]);
+    elements.aiCautions.replaceChildren(
+      createElement('li', { text: 'これは画面確認用のデモです。時刻・距離・経路は実際の検索結果ではありません。' }),
+    );
+    elements.routeDataSource.textContent = 'デモデータ（実際の経路ではありません）';
+    elements.resultsSection.classList.remove('hidden');
+    elements.timelineSection.classList.remove('hidden');
+    elements.aiSection.classList.remove('hidden');
+    showMessage('デモ結果を表示しています。API設定後は実際の経路に切り替わります。');
+  } catch (error) {
+    showMessage(error instanceof Error ? error.message : 'デモを表示できませんでした。', true);
   } finally {
     elements.searchRoute.disabled = false;
   }
@@ -589,7 +697,11 @@ function renderTimeline(route, input) {
 }
 
 async function renderMapRoute(index) {
-  if (!state.map || !state.currentRoutes[index]) return;
+  if (state.demoMode || !state.map || !state.currentRoutes[index]) {
+    elements.mapPlaceholder.textContent = 'API設定後に実際のルート地図が表示されます';
+    elements.mapPlaceholder.classList.remove('hidden');
+    return;
+  }
   const renderId = ++state.mapRenderId;
   state.mapPolylines.forEach((polyline) => polyline.setMap(null));
   state.mapMarkers.forEach((marker) => { marker.map = null; });
@@ -617,10 +729,48 @@ async function renderMapRoute(index) {
 
 function renderLocalRecommendation(route) {
   elements.aiSummary.textContent = `${route.name}は、所要${route.durationMinutes}分・徒歩${route.walkingMinutes}分・乗換${route.transfers}回です。`;
-  elements.aiReason.textContent = `選択した「${preferenceLabel(elements.routePreference.value)}」を基準に、負担度${route.stressScore}のルートをおすすめしています。`;
+  elements.aiReason.textContent = `${state.demoMode ? 'デモでは、' : ''}選択した「${preferenceLabel(elements.routePreference.value)}」を基準に、負担度${route.stressScore}のルートをおすすめしています。`;
   elements.aiCautions.replaceChildren(
     createElement('li', { text: '運行状況や時刻は変わる場合があります。出発前に最新情報を確認してください。' }),
   );
+}
+
+async function savePersonalApiConfig(event) {
+  event.preventDefault();
+  elements.apiConfigMessage.textContent = 'API設定を反映しています…';
+  try {
+    const response = await fetch('/api/personal-config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        googleMapsApiKey: elements.googleApiKey.value,
+        geminiApiKey: elements.geminiApiKey.value,
+      }),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'API設定に失敗しました。');
+    elements.apiConfigMessage.textContent = '設定しました。画面を再読み込みします…';
+    window.setTimeout(() => window.location.reload(), 500);
+  } catch (error) {
+    elements.apiConfigMessage.textContent = error instanceof Error
+      ? error.message
+      : 'API設定に失敗しました。';
+  }
+}
+
+async function clearPersonalApiConfig() {
+  elements.apiConfigMessage.textContent = '一時設定を削除しています…';
+  try {
+    const response = await fetch('/api/personal-config', { method: 'DELETE' });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || '一時設定を削除できませんでした。');
+    elements.apiConfigMessage.textContent = '削除しました。画面を再読み込みします…';
+    window.setTimeout(() => window.location.reload(), 500);
+  } catch (error) {
+    elements.apiConfigMessage.textContent = error instanceof Error
+      ? error.message
+      : '一時設定を削除できませんでした。';
+  }
 }
 
 function preferenceLabel(value) {
@@ -844,6 +994,9 @@ function deleteSavedRoute(id) {
 function cacheElements() {
   Object.assign(elements, {
     aiCautions: byId('ai-cautions'),
+    apiConfigForm: byId('api-config-form'),
+    apiConfigMessage: byId('api-config-message'),
+    apiConfigNote: byId('api-config-note'),
     aiReason: byId('ai-reason'),
     aiSection: byId('ai-section'),
     aiSummary: byId('ai-summary'),
@@ -856,8 +1009,11 @@ function cacheElements() {
     destinationFallback: byId('destination-fallback'),
     favoritePlaceChips: byId('favorite-place-chips'),
     geminiConfigStatus: byId('gemini-config-status'),
+    geminiApiKey: byId('gemini-api-key'),
+    googleApiKey: byId('google-api-key'),
     loadWeather: byId('load-weather'),
     map: byId('map'),
+    mapPlaceholder: byId('map-placeholder'),
     mapsConfigStatus: byId('maps-config-status'),
     mapsStatus: byId('maps-status'),
     originAutocomplete: byId('origin-autocomplete'),
@@ -867,9 +1023,11 @@ function cacheElements() {
     placeId: byId('place-id'),
     placeList: byId('place-list'),
     placeName: byId('place-name'),
+    personalApiSetup: byId('personal-api-setup'),
     preparationMinutes: byId('preparation-minutes'),
     resultsSection: byId('results-section'),
     routeMessage: byId('route-message'),
+    routeDataSource: byId('route-data-source'),
     routePreference: byId('route-preference'),
     routeResults: byId('route-results'),
     savedRouteDestination: byId('saved-route-destination'),
@@ -879,6 +1037,7 @@ function cacheElements() {
     savedRouteName: byId('saved-route-name'),
     savedRouteOrigin: byId('saved-route-origin'),
     searchRoute: byId('search-route'),
+    searchRouteLabel: byId('search-route-label'),
     settingsDialog: byId('settings-dialog'),
     timeline: byId('timeline'),
     timelineSection: byId('timeline-section'),
@@ -897,6 +1056,8 @@ function attachEvents() {
   elements.searchRoute.addEventListener('click', searchRoutes);
   elements.placeForm.addEventListener('submit', savePlace);
   elements.savedRouteForm.addEventListener('submit', saveRoute);
+  elements.apiConfigForm.addEventListener('submit', savePersonalApiConfig);
+  byId('clear-api-config').addEventListener('click', clearPersonalApiConfig);
   elements.cancelPlaceEdit.addEventListener('click', resetPlaceForm);
   elements.cancelRouteEdit.addEventListener('click', resetRouteForm);
   byId('open-settings').addEventListener('click', () => elements.settingsDialog.showModal());

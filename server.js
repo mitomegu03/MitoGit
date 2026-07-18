@@ -7,6 +7,12 @@ const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(rootDir, 'public');
 const port = Number(process.env.PORT || 3000);
 const rateLimits = new Map();
+const personalSetupEnabled = process.env.ALLOW_PERSONAL_API_SETUP === '1'
+  || (process.env.ALLOW_PERSONAL_API_SETUP !== '0' && process.env.NODE_ENV !== 'production');
+const personalConfig = {
+  googleMapsApiKey: '',
+  geminiApiKey: '',
+};
 
 const mimeTypes = {
   '.css': 'text/css; charset=utf-8',
@@ -56,6 +62,27 @@ function cleanNumber(value, minimum, maximum) {
   return Number.isFinite(number)
     ? Math.min(maximum, Math.max(minimum, number))
     : minimum;
+}
+
+function getGoogleMapsApiKey() {
+  return process.env.GOOGLE_MAPS_BROWSER_API_KEY || personalConfig.googleMapsApiKey;
+}
+
+function getGeminiApiKey() {
+  return process.env.GEMINI_API_KEY || personalConfig.geminiApiKey;
+}
+
+function configResponse() {
+  const googleMapsApiKey = getGoogleMapsApiKey();
+  return {
+    googleMapsApiKey,
+    mapsConfigured: Boolean(googleMapsApiKey),
+    geminiConfigured: Boolean(getGeminiApiKey()),
+    personalSetupEnabled,
+    runtimeConfigured: Boolean(
+      personalConfig.googleMapsApiKey || personalConfig.geminiApiKey,
+    ),
+  };
 }
 
 function normalizeRequest(body) {
@@ -164,7 +191,8 @@ async function handleConcierge(request, response) {
     sendJson(response, 403, { error: '許可されていない送信元です。' });
     return;
   }
-  if (!process.env.GEMINI_API_KEY) {
+  const geminiApiKey = getGeminiApiKey();
+  if (!geminiApiKey) {
     sendJson(response, 503, { error: 'Gemini APIがサーバーに設定されていません。' });
     return;
   }
@@ -186,7 +214,7 @@ async function handleConcierge(request, response) {
         signal: abortController.signal,
         headers: {
           'Content-Type': 'application/json',
-          'x-goog-api-key': process.env.GEMINI_API_KEY,
+          'x-goog-api-key': geminiApiKey,
         },
         body: JSON.stringify({
           systemInstruction: {
@@ -261,6 +289,55 @@ async function handleConcierge(request, response) {
   }
 }
 
+function validPersonalApiKey(value) {
+  if (typeof value !== 'string') return '';
+  const key = value.trim();
+  if (!key) return '';
+  if (key.length < 20 || key.length > 256 || /\s/.test(key)) {
+    throw new Error('APIキーの形式を確認してください。');
+  }
+  return key;
+}
+
+async function handlePersonalConfig(request, response) {
+  if (!personalSetupEnabled) {
+    sendJson(response, 404, { error: '個人用API設定は無効です。' });
+    return;
+  }
+  if (!isAllowedBrowserRequest(request)) {
+    sendJson(response, 403, { error: '許可されていない送信元です。' });
+    return;
+  }
+
+  if (request.method === 'DELETE') {
+    personalConfig.googleMapsApiKey = '';
+    personalConfig.geminiApiKey = '';
+    sendJson(response, 200, configResponse());
+    return;
+  }
+
+  if (!String(request.headers['content-type'] || '').toLowerCase().startsWith('application/json')) {
+    sendJson(response, 415, { error: 'Content-Typeはapplication/jsonを指定してください。' });
+    return;
+  }
+
+  try {
+    const body = await readJsonBody(request);
+    const googleMapsApiKey = validPersonalApiKey(body.googleMapsApiKey);
+    const geminiApiKey = validPersonalApiKey(body.geminiApiKey);
+    if (!googleMapsApiKey && !geminiApiKey) {
+      throw new Error('Google MapsまたはGeminiのAPIキーを入力してください。');
+    }
+    if (googleMapsApiKey) personalConfig.googleMapsApiKey = googleMapsApiKey;
+    if (geminiApiKey) personalConfig.geminiApiKey = geminiApiKey;
+    sendJson(response, 200, configResponse());
+  } catch (error) {
+    sendJson(response, 400, {
+      error: error instanceof Error ? cleanText(error.message, 200) : 'API設定に失敗しました。',
+    });
+  }
+}
+
 async function serveStatic(request, response, pathname) {
   const relativePath = pathname === '/' ? 'index.html' : pathname.replace(/^\/+/, '');
   const filePath = path.resolve(publicDir, relativePath);
@@ -291,16 +368,20 @@ const server = createServer(async (request, response) => {
     const url = new URL(request.url || '/', `http://${request.headers.host || 'localhost'}`);
 
     if (request.method === 'GET' && url.pathname === '/api/config') {
-      sendJson(response, 200, {
-        googleMapsApiKey: process.env.GOOGLE_MAPS_BROWSER_API_KEY || '',
-        mapsConfigured: Boolean(process.env.GOOGLE_MAPS_BROWSER_API_KEY),
-        geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
-      });
+      sendJson(response, 200, configResponse());
       return;
     }
 
     if (request.method === 'POST' && url.pathname === '/api/concierge') {
       await handleConcierge(request, response);
+      return;
+    }
+
+    if (
+      ['POST', 'DELETE'].includes(request.method)
+      && url.pathname === '/api/personal-config'
+    ) {
+      await handlePersonalConfig(request, response);
       return;
     }
 

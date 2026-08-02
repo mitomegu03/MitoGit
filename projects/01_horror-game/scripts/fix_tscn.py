@@ -5,7 +5,7 @@ BOMなしUTF-8で test_room.tscn を正しく書き直す
 from pathlib import Path
 
 content = """\
-[gd_scene load_steps=20 format=3 uid="uid://test_room_001"]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/investigation/investigate_trigger.gd" id="2_trigger"]

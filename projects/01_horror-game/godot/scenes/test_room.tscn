@@ -1,8 +1,12 @@
-[gd_scene format=3 uid="uid://do1erygjvxg5t"]
+ーpwdpwdpwd[gd_scene load_steps=20 format=3 uid="uid://test_room_001"]
 
-[ext_resource type="Script" uid="uid://bj3p27o210tnm" path="res://scripts/player/player.gd" id="1_player"]
-[ext_resource type="Script" uid="uid://ba5snxi5vqhmg" path="res://scripts/investigation/investigate_trigger.gd" id="2_trigger"]
-[ext_resource type="Script" uid="uid://b4yi4hokyj4r7" path="res://scripts/ui/investigation_ui.gd" id="3_ui"]
+[ext_resource type="Script"      path="res://scripts/player/player.gd"                    id="1_player"]
+[ext_resource type="Script"      path="res://scripts/investigation/investigate_trigger.gd" id="2_trigger"]
+[ext_resource type="Script"      path="res://scripts/ui/investigation_ui.gd"               id="3_ui"]
+[ext_resource type="Texture2D"   path="res://assets/images/floor.png"      id="4_floor"]
+[ext_resource type="Texture2D"   path="res://assets/images/center_obj.png" id="5_center_obj"]
+[ext_resource type="Texture2D"   path="res://assets/images/desk_fps.png"   id="6_desk_fp"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambient.mp3"     id="7_ambient"]
 
 [sub_resource type="RectangleShape2D" id="1_wall_n"]
 size = Vector2(640, 20)
@@ -30,15 +34,25 @@ radius = 14.0
 
 [node name="TestRoom" type="Node2D" unique_id=1123934938]
 
-[node name="Floor" type="ColorRect" parent="." unique_id=1301776242]
-offset_right = 640.0
+; ── 背景（床） ───────────────────────────────
+[node name="Floor" type="TextureRect" parent="."]
+offset_left   = 0.0
+offset_top    = 0.0
+offset_right  = 640.0
 offset_bottom = 360.0
-color = Color(0.12, 0.1, 0.1, 1)
+texture       = ExtResource("4_floor")
+stretch_mode  = 3
 
 [node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=789580938]
 color = Color(0.06, 0.06, 0.08, 1)
 
-[node name="WallN" type="StaticBody2D" parent="." unique_id=1964003095]
+[node name="AmbientPlayer" type="AudioStreamPlayer" parent="."]
+stream    = ExtResource("7_ambient")
+autoplay  = true
+volume_db = -10.0
+
+; ══ 壁（コリジョンのみ・ライトが当たると見える） ═
+[node name="WallN" type="StaticBody2D" parent="."]
 position = Vector2(320, 10)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallN" unique_id=819244594]
@@ -68,9 +82,9 @@ shape = SubResource("4_wall_e")
 [node name="CenterObstacle" type="StaticBody2D" parent="." unique_id=767309209]
 position = Vector2(320, 175)
 
-[node name="BodyPolygon" type="Polygon2D" parent="CenterObstacle" unique_id=533790204]
-color = Color(0.3, 0.25, 0.2, 1)
-polygon = PackedVector2Array(-24, -24, 24, -24, 24, 24, -24, 24)
+[node name="Sprite2D" type="Sprite2D" parent="CenterObstacle"]
+texture = ExtResource("5_center_obj")
+scale   = Vector2(0.18, 0.18)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CenterObstacle" unique_id=1243538870]
 shape = SubResource("5_obstacle")
@@ -84,9 +98,9 @@ collision_layer = 2
 script = ExtResource("2_trigger")
 investigation_ui_path = NodePath("../InvestigationUI")
 
-[node name="BodyPolygon" type="Polygon2D" parent="InvestigateTable" unique_id=1055081197]
-color = Color(0.25, 0.18, 0.12, 1)
-polygon = PackedVector2Array(-32, -20, 32, -20, 32, 20, -32, 20)
+[node name="Sprite2D" type="Sprite2D" parent="InvestigateTable"]
+texture = ExtResource("5_center_obj")
+scale   = Vector2(0.12, 0.12)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InvestigateTable" unique_id=1714335198]
 shape = SubResource("8_table_detect")
@@ -111,9 +125,12 @@ polygon = PackedVector2Array(0, -14, 12, 10, -12, 10)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=1231439543]
 shape = SubResource("9_player")
 
-[node name="FlashLight" type="PointLight2D" parent="Player" unique_id=2088846890]
-color = Color(1, 0.95, 0.8, 1)
-energy = 1.5
+; 懐中電灯（PointLight2D）
+[node name="FlashLight" type="PointLight2D" parent="Player"]
+position       = Vector2(0, 0)
+color          = Color(1.0, 0.95, 0.80, 1.0)
+energy         = 1.8
+texture_scale  = 3.0
 shadow_enabled = true
 shadow_filter = 1
 texture_scale = 2.0
@@ -123,30 +140,29 @@ layer = 10
 visible = false
 script = ExtResource("3_ui")
 
-[node name="Panel" type="Panel" parent="InvestigationUI" unique_id=24654011]
-offset_left = 80.0
-offset_top = 60.0
-offset_right = 560.0
-offset_bottom = 300.0
+[node name="Panel" type="Panel" parent="InvestigationUI"]
+offset_left   = 60.0
+offset_top    = 30.0
+offset_right  = 580.0
+offset_bottom = 330.0
 
-[node name="TitleLabel" type="Label" parent="InvestigationUI/Panel" unique_id=904394646]
-modulate = Color(1, 0.95, 0.7, 1)
-layout_mode = 0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 20.0
-offset_bottom = 20.0
-text = "── 古びたテーブル ──"
+[node name="DeskImage" type="TextureRect" parent="InvestigationUI/Panel"]
+offset_left   = 0.0
+offset_top    = 0.0
+offset_right  = 520.0
+offset_bottom = 200.0
+texture       = ExtResource("6_desk_fp")
+stretch_mode  = 5
 
-[node name="ContentLabel" type="Label" parent="InvestigationUI/Panel" unique_id=1918559590]
-modulate = Color(0.9, 0.88, 0.85, 1)
-layout_mode = 0
-offset_left = 20.0
-offset_top = 60.0
-offset_right = 20.0
-offset_bottom = 60.0
-text = "埃をかぶった書類が積まれている。
-何かが書き殴られているが、読めない。"
+[node name="TitleLabel" type="Label" parent="InvestigationUI/Panel"]
+position  = Vector2(20, 210)
+text      = "── 古びたテーブル ──"
+modulate  = Color(1, 0.95, 0.7, 1)
+
+[node name="ContentLabel" type="Label" parent="InvestigationUI/Panel"]
+position    = Vector2(20, 60)
+text        = "埃をかぶった書類が積まれている。\n何かが書き殴られているが、読めない。"
+modulate    = Color(0.9, 0.88, 0.85, 1)
 autowrap_mode = 3
 
 [node name="HintLabel" type="Label" parent="InvestigationUI/Panel" unique_id=817363810]

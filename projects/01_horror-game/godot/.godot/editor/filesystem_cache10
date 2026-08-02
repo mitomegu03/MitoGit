@@ -1,11 +1,11 @@
 78098b89c88a74ebe8c20117b8754620
 ::res://::1785686595
 ::res://resources/::1785686439
-::res://scenes/::1785686439
-test_room.tscn::PackedScene::-1::1785686439::0::1::::<><><>0<>0<><>::res://scripts/player/player.gd<>res://scripts/investigation/investigate_trigger.gd<>res://scripts/ui/investigation_ui.gd
+::res://scenes/::1785692847
+test_room.tscn::PackedScene::-1::1785692870::0::1::::<><><>0<>0<><>::
 ::res://scripts/::1785686439
-::res://scripts/investigation/::1785686595
-investigate_trigger.gd::GDScript::2449469359292706122::1785686439::0::1::::<>Area2D<><>0<>0<><>::
+::res://scripts/investigation/::1785687592
+investigate_trigger.gd::GDScript::2449469359292706122::1785687592::0::1::::<>Area2D<><>0<>0<><>::
 ::res://scripts/lighting/::1785686439
 ::res://scripts/player/::1785686595
 player.gd::GDScript::3076883528512968026::1785686439::0::1::::<>CharacterBody2D<><>0<>0<><>::

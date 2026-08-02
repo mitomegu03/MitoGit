@@ -1,0 +1,49 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // ─────────────────────────────────────────────
+      // Godot 4 デバッグ起動設定
+      // ─────────────────────────────────────────────
+      "name": "Godot 4 - Launch Project",
+      "type": "godot",
+      "request": "launch",
+      "project": "${workspaceFolder}/projects/01_horror-game/godot",
+      "port": 6006,
+      "address": "localhost",
+      "launch_game_instance": true,
+      "launch_scene": false
+    },
+    {
+      // 現在開いているシーン単体をデバッグ起動
+      "name": "Godot 4 - Launch Current Scene",
+      "type": "godot",
+      "request": "launch",
+      "project": "${workspaceFolder}/projects/01_horror-game/godot",
+      "port": 6006,
+      "address": "localhost",
+      "launch_game_instance": true,
+      "launch_scene": true
+    },
+    {
+      // ─────────────────────────────────────────────
+      // Python スクリプト実行（アセット生成用）
+      // ─────────────────────────────────────────────
+      "name": "Python - test_imagen.py",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/projects/01_horror-game/scripts/test_imagen.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      // Python スクリプト汎用実行（カレントファイル）
+      "name": "Python - Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

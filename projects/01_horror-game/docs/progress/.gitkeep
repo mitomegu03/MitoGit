@@ -1,0 +1,17 @@
+projects/01_horror-game/
+├── INDEX.md                  ← ★ 作業前に必ず確認する目次
+│
+├── _context/                 ← プロジェクト前提・AIルール（常時参照）
+│   ├── project_overview.md   ← ゲーム概要・システム・参考作品
+│   ├── environment.md        ← 開発環境・Godot連携フロー
+│   └── ai_rules.md           ← 読み込みルール・コード生成規約
+│
+├── godot/scripts/
+│   ├── player/               ← 移動・視点切り替え
+│   ├── investigation/        ← 1人称調査ギミック
+│   ├── lighting/             ← 懐中電灯・2Dライト
+│   └── ui/                   ← UI制御
+│
+├── assets/                   ← スプライト・音声・フォント
+├── story/                    ← シナリオ・世界観設定
+└── docs/                     ← 仕様書・進捗メモ

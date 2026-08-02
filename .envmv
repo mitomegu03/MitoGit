@@ -1,0 +1,1 @@
+ELEVENLABS_API_KEY=sk_b16f5c0ffa046020ebb8dc43c0329aab7b5f2bbc6abcbe96 projects/01_horror-game/test_elevenlabs.py projects/01_horror-game/scripts/test_audio.pyls -la projects/01_horror-game/godot/scenes/cat projects/01_horror-game/godot/scenes/test_room.tscn

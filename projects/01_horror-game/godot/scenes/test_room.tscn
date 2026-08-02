@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D"   path="res://assets/images/center_obj.png" id="5_center_obj"]
 [ext_resource type="Texture2D"   path="res://assets/images/desk_fps.png"   id="6_desk_fp"]
 [ext_resource type="AudioStream" path="res://assets/audio/ambient.mp3"     id="7_ambient"]
+[ext_resource type="Texture2D"   path="res://assets/images/light_mask.png" id="8_light"]
 
 ; ── 壁コリジョン形状 ──────────────────────────
 [sub_resource type="RectangleShape2D" id="1_wall_n"]
@@ -140,6 +141,7 @@ shape = SubResource("9_player")
 position       = Vector2(0, 0)
 color          = Color(1.0, 0.95, 0.80, 1.0)
 energy         = 1.8
+texture        = ExtResource("8_light")
 texture_scale  = 3.0
 shadow_enabled = true
 shadow_filter  = 1

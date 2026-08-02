@@ -1,12 +1,14 @@
-[gd_scene load_steps=15 format=3 uid="uid://test_room_001"]
+[gd_scene format=3 uid="uid://do1erygjvxg5t"]
 
-[ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player"]
-[ext_resource type="Script" path="res://scripts/investigation/investigate_trigger.gd" id="2_trigger"]
-[ext_resource type="Script" path="res://scripts/ui/investigation_ui.gd" id="3_ui"]
+[ext_resource type="Script" uid="uid://bj3p27o210tnm" path="res://scripts/player/player.gd" id="1_player"]
+[ext_resource type="Script" uid="uid://ba5snxi5vqhmg" path="res://scripts/investigation/investigate_trigger.gd" id="2_trigger"]
+[ext_resource type="Script" uid="uid://b4yi4hokyj4r7" path="res://scripts/ui/investigation_ui.gd" id="3_ui"]
 
-; ── 壁コリジョン形状 ──────────────────────────
 [sub_resource type="RectangleShape2D" id="1_wall_n"]
 size = Vector2(640, 20)
+
+[sub_resource type="OccluderPolygon2D" id="6_occluder"]
+polygon = PackedVector2Array(-24, -24, 24, -24, 24, 24, -24, 24)
 
 [sub_resource type="RectangleShape2D" id="2_wall_s"]
 size = Vector2(640, 20)
@@ -17,147 +19,141 @@ size = Vector2(20, 360)
 [sub_resource type="RectangleShape2D" id="4_wall_e"]
 size = Vector2(20, 360)
 
-; ── 中央オブジェクト（影テスト用） ─────────────
 [sub_resource type="RectangleShape2D" id="5_obstacle"]
 size = Vector2(48, 48)
-
-[sub_resource type="OccluderPolygon2D" id="6_occluder"]
-polygon = PackedVector2Array(-24, -24, 24, -24, 24, 24, -24, 24)
-
-; ── 調査テーブル ──────────────────────────────
-[sub_resource type="RectangleShape2D" id="7_table_col"]
-size = Vector2(64, 40)
 
 [sub_resource type="CircleShape2D" id="8_table_detect"]
 radius = 60.0
 
-; ── プレイヤー ────────────────────────────────
 [sub_resource type="CircleShape2D" id="9_player"]
 radius = 14.0
 
-; ══════════════════════════════════════════════
-; シーンルート
-; ══════════════════════════════════════════════
-[node name="TestRoom" type="Node2D"]
+[node name="TestRoom" type="Node2D" unique_id=1123934938]
 
-; ── 背景（床） ───────────────────────────────
-[node name="Floor" type="ColorRect" parent="."]
-offset_left   = 0.0
-offset_top    = 0.0
-offset_right  = 640.0
+[node name="Floor" type="ColorRect" parent="." unique_id=1301776242]
+offset_right = 640.0
 offset_bottom = 360.0
-color = Color(0.12, 0.10, 0.10, 1.0)
+color = Color(0.12, 0.1, 0.1, 1)
 
-; ── 全体を暗くする ────────────────────────────
-[node name="CanvasModulate" type="CanvasModulate" parent="."]
-color = Color(0.06, 0.06, 0.08, 1.0)
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=789580938]
+color = Color(0.06, 0.06, 0.08, 1)
 
-; ══ 壁（コリジョンのみ・ライトが当たると見える） ═
-[node name="WallN" type="StaticBody2D" parent="."]
+[node name="WallN" type="StaticBody2D" parent="." unique_id=1964003095]
 position = Vector2(320, 10)
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WallN"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallN" unique_id=819244594]
 shape = SubResource("1_wall_n")
-[node name="LightOccluder2D" type="LightOccluder2D" parent="WallN"]
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="WallN" unique_id=1240225109]
 occluder = SubResource("6_occluder")
 
-[node name="WallS" type="StaticBody2D" parent="."]
+[node name="WallS" type="StaticBody2D" parent="." unique_id=1533225127]
 position = Vector2(320, 350)
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WallS"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallS" unique_id=112281180]
 shape = SubResource("2_wall_s")
 
-[node name="WallW" type="StaticBody2D" parent="."]
+[node name="WallW" type="StaticBody2D" parent="." unique_id=1969152735]
 position = Vector2(10, 180)
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WallW"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallW" unique_id=685704641]
 shape = SubResource("3_wall_w")
 
-[node name="WallE" type="StaticBody2D" parent="."]
+[node name="WallE" type="StaticBody2D" parent="." unique_id=1622481004]
 position = Vector2(630, 180)
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WallE"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallE" unique_id=1070894690]
 shape = SubResource("4_wall_e")
 
-; ══ 中央オブジェクト（ライト影テスト用） ══════
-[node name="CenterObstacle" type="StaticBody2D" parent="."]
+[node name="CenterObstacle" type="StaticBody2D" parent="." unique_id=767309209]
 position = Vector2(320, 175)
 
-[node name="BodyPolygon" type="Polygon2D" parent="CenterObstacle"]
-polygon  = PackedVector2Array(-24, -24, 24, -24, 24, 24, -24, 24)
-color    = Color(0.30, 0.25, 0.20, 1.0)
+[node name="BodyPolygon" type="Polygon2D" parent="CenterObstacle" unique_id=533790204]
+color = Color(0.3, 0.25, 0.2, 1)
+polygon = PackedVector2Array(-24, -24, 24, -24, 24, 24, -24, 24)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CenterObstacle"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CenterObstacle" unique_id=1243538870]
 shape = SubResource("5_obstacle")
 
-[node name="LightOccluder2D" type="LightOccluder2D" parent="CenterObstacle"]
+[node name="LightOccluder2D" type="LightOccluder2D" parent="CenterObstacle" unique_id=80157708]
 occluder = SubResource("6_occluder")
 
-; ══ 調査テーブル（部屋の角・左上） ════════════
-[node name="InvestigateTable" type="Area2D" parent="."]
+[node name="InvestigateTable" type="Area2D" parent="." unique_id=1084141661]
 position = Vector2(90, 80)
 collision_layer = 2
-collision_mask  = 1
 script = ExtResource("2_trigger")
 investigation_ui_path = NodePath("../InvestigationUI")
 
-[node name="BodyPolygon" type="Polygon2D" parent="InvestigateTable"]
+[node name="BodyPolygon" type="Polygon2D" parent="InvestigateTable" unique_id=1055081197]
+color = Color(0.25, 0.18, 0.12, 1)
 polygon = PackedVector2Array(-32, -20, 32, -20, 32, 20, -32, 20)
-color   = Color(0.25, 0.18, 0.12, 1.0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="InvestigateTable"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InvestigateTable" unique_id=1714335198]
 shape = SubResource("8_table_detect")
 
-[node name="HintLabel" type="Label" parent="InvestigateTable"]
-position     = Vector2(-40, -40)
-text         = "[ Space ] 調査する"
-modulate     = Color(1, 0.95, 0.6, 1.0)
-visible      = false
+[node name="HintLabel" type="Label" parent="InvestigateTable" unique_id=105801073]
+visible = false
+modulate = Color(1, 0.95, 0.6, 1)
+offset_left = -40.0
+offset_top = -40.0
+offset_right = -40.0
+offset_bottom = -40.0
+text = "[ Space ] 調査する"
 
-; ══ プレイヤー ════════════════════════════════
-[node name="Player" type="CharacterBody2D" parent="."]
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1305084270]
 position = Vector2(400, 240)
-collision_layer = 1
-collision_mask  = 1
 script = ExtResource("1_player")
 
-; プレイヤーの見た目（三角形）
-[node name="BodyPolygon" type="Polygon2D" parent="Player"]
-polygon  = PackedVector2Array(0, -14, 12, 10, -12, 10)
-color    = Color(0.85, 0.85, 0.80, 1.0)
+[node name="BodyPolygon" type="Polygon2D" parent="Player" unique_id=1943131410]
+color = Color(0.85, 0.85, 0.8, 1)
+polygon = PackedVector2Array(0, -14, 12, 10, -12, 10)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=1231439543]
 shape = SubResource("9_player")
 
-; 懐中電灯（PointLight2D）
-[node name="FlashLight" type="PointLight2D" parent="Player"]
-position       = Vector2(0, 0)
-color          = Color(1.0, 0.95, 0.80, 1.0)
-energy         = 1.5
-texture_scale  = 2.0
+[node name="FlashLight" type="PointLight2D" parent="Player" unique_id=2088846890]
+color = Color(1, 0.95, 0.8, 1)
+energy = 1.5
 shadow_enabled = true
-shadow_filter  = 1
+shadow_filter = 1
+texture_scale = 2.0
 
-; ══ 1人称調査UI（CanvasLayer） ═════════════════
-[node name="InvestigationUI" type="CanvasLayer" parent="."]
-layer   = 10
+[node name="InvestigationUI" type="CanvasLayer" parent="." unique_id=475485967]
+layer = 10
 visible = false
-script  = ExtResource("3_ui")
+script = ExtResource("3_ui")
 
-[node name="Panel" type="Panel" parent="InvestigationUI"]
-offset_left   = 80.0
-offset_top    = 60.0
-offset_right  = 560.0
+[node name="Panel" type="Panel" parent="InvestigationUI" unique_id=24654011]
+offset_left = 80.0
+offset_top = 60.0
+offset_right = 560.0
 offset_bottom = 300.0
 
-[node name="TitleLabel" type="Label" parent="InvestigationUI/Panel"]
-position  = Vector2(20, 20)
-text      = "── 古びたテーブル ──"
-modulate  = Color(1, 0.95, 0.7, 1)
+[node name="TitleLabel" type="Label" parent="InvestigationUI/Panel" unique_id=904394646]
+modulate = Color(1, 0.95, 0.7, 1)
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 20.0
+offset_bottom = 20.0
+text = "── 古びたテーブル ──"
 
-[node name="ContentLabel" type="Label" parent="InvestigationUI/Panel"]
-position    = Vector2(20, 60)
-text        = "埃をかぶった書類が積まれている。\n何かが書き殴られているが、読めない。"
-modulate    = Color(0.9, 0.88, 0.85, 1)
+[node name="ContentLabel" type="Label" parent="InvestigationUI/Panel" unique_id=1918559590]
+modulate = Color(0.9, 0.88, 0.85, 1)
+layout_mode = 0
+offset_left = 20.0
+offset_top = 60.0
+offset_right = 20.0
+offset_bottom = 60.0
+text = "埃をかぶった書類が積まれている。
+何かが書き殴られているが、読めない。"
 autowrap_mode = 3
 
-[node name="HintLabel" type="Label" parent="InvestigationUI/Panel"]
-position  = Vector2(20, 180)
-text      = "[ ESC ] 戻る"
-modulate  = Color(0.7, 0.7, 0.7, 1)
+[node name="HintLabel" type="Label" parent="InvestigationUI/Panel" unique_id=817363810]
+modulate = Color(0.7, 0.7, 0.7, 1)
+layout_mode = 0
+offset_left = 20.0
+offset_top = 180.0
+offset_right = 20.0
+offset_bottom = 180.0
+text = "[ ESC ] 戻る"

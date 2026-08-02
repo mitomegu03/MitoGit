@@ -13,7 +13,7 @@ var _player_inside := false
 
 func _ready() -> void:
 	# 調査UIへの参照を取得
-	if investigation_ui_path != "":
+	if not investigation_ui_path.is_empty():
 		_ui = get_node(investigation_ui_path)
 
 	# シグナルを接続

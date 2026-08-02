@@ -1,8 +1,12 @@
-[gd_scene load_steps=15 format=3 uid="uid://test_room_001"]
+ーpwdpwdpwd[gd_scene load_steps=20 format=3 uid="uid://test_room_001"]
 
-[ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player"]
-[ext_resource type="Script" path="res://scripts/investigation/investigate_trigger.gd" id="2_trigger"]
-[ext_resource type="Script" path="res://scripts/ui/investigation_ui.gd" id="3_ui"]
+[ext_resource type="Script"      path="res://scripts/player/player.gd"                    id="1_player"]
+[ext_resource type="Script"      path="res://scripts/investigation/investigate_trigger.gd" id="2_trigger"]
+[ext_resource type="Script"      path="res://scripts/ui/investigation_ui.gd"               id="3_ui"]
+[ext_resource type="Texture2D"   path="res://assets/images/floor.png"      id="4_floor"]
+[ext_resource type="Texture2D"   path="res://assets/images/center_obj.png" id="5_center_obj"]
+[ext_resource type="Texture2D"   path="res://assets/images/desk_fps.png"   id="6_desk_fp"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambient.mp3"     id="7_ambient"]
 
 ; ── 壁コリジョン形状 ──────────────────────────
 [sub_resource type="RectangleShape2D" id="1_wall_n"]
@@ -41,16 +45,22 @@ radius = 14.0
 [node name="TestRoom" type="Node2D"]
 
 ; ── 背景（床） ───────────────────────────────
-[node name="Floor" type="ColorRect" parent="."]
+[node name="Floor" type="TextureRect" parent="."]
 offset_left   = 0.0
 offset_top    = 0.0
 offset_right  = 640.0
 offset_bottom = 360.0
-color = Color(0.12, 0.10, 0.10, 1.0)
+texture       = ExtResource("4_floor")
+stretch_mode  = 3
 
 ; ── 全体を暗くする ────────────────────────────
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
 color = Color(0.06, 0.06, 0.08, 1.0)
+
+[node name="AmbientPlayer" type="AudioStreamPlayer" parent="."]
+stream    = ExtResource("7_ambient")
+autoplay  = true
+volume_db = -10.0
 
 ; ══ 壁（コリジョンのみ・ライトが当たると見える） ═
 [node name="WallN" type="StaticBody2D" parent="."]
@@ -79,9 +89,9 @@ shape = SubResource("4_wall_e")
 [node name="CenterObstacle" type="StaticBody2D" parent="."]
 position = Vector2(320, 175)
 
-[node name="BodyPolygon" type="Polygon2D" parent="CenterObstacle"]
-polygon  = PackedVector2Array(-24, -24, 24, -24, 24, 24, -24, 24)
-color    = Color(0.30, 0.25, 0.20, 1.0)
+[node name="Sprite2D" type="Sprite2D" parent="CenterObstacle"]
+texture = ExtResource("5_center_obj")
+scale   = Vector2(0.18, 0.18)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CenterObstacle"]
 shape = SubResource("5_obstacle")
@@ -97,9 +107,9 @@ collision_mask  = 1
 script = ExtResource("2_trigger")
 investigation_ui_path = NodePath("../InvestigationUI")
 
-[node name="BodyPolygon" type="Polygon2D" parent="InvestigateTable"]
-polygon = PackedVector2Array(-32, -20, 32, -20, 32, 20, -32, 20)
-color   = Color(0.25, 0.18, 0.12, 1.0)
+[node name="Sprite2D" type="Sprite2D" parent="InvestigateTable"]
+texture = ExtResource("5_center_obj")
+scale   = Vector2(0.12, 0.12)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InvestigateTable"]
 shape = SubResource("8_table_detect")
@@ -129,8 +139,8 @@ shape = SubResource("9_player")
 [node name="FlashLight" type="PointLight2D" parent="Player"]
 position       = Vector2(0, 0)
 color          = Color(1.0, 0.95, 0.80, 1.0)
-energy         = 1.5
-texture_scale  = 2.0
+energy         = 1.8
+texture_scale  = 3.0
 shadow_enabled = true
 shadow_filter  = 1
 
@@ -141,13 +151,21 @@ visible = false
 script  = ExtResource("3_ui")
 
 [node name="Panel" type="Panel" parent="InvestigationUI"]
-offset_left   = 80.0
-offset_top    = 60.0
-offset_right  = 560.0
-offset_bottom = 300.0
+offset_left   = 60.0
+offset_top    = 30.0
+offset_right  = 580.0
+offset_bottom = 330.0
+
+[node name="DeskImage" type="TextureRect" parent="InvestigationUI/Panel"]
+offset_left   = 0.0
+offset_top    = 0.0
+offset_right  = 520.0
+offset_bottom = 200.0
+texture       = ExtResource("6_desk_fp")
+stretch_mode  = 5
 
 [node name="TitleLabel" type="Label" parent="InvestigationUI/Panel"]
-position  = Vector2(20, 20)
+position  = Vector2(20, 210)
 text      = "── 古びたテーブル ──"
 modulate  = Color(1, 0.95, 0.7, 1)
 

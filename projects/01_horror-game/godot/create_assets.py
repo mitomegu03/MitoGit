@@ -16,7 +16,7 @@ draw.rectangle([0, 0, 31, 31], fill=(45, 40, 34))
 draw.rectangle([32, 32, 63, 63], fill=(45, 40, 34))
 draw.line([32, 0, 32, 63], fill=(25, 22, 18), width=1)
 draw.line([0, 32, 63, 32], fill=(25, 22, 18), width=1)
-img.save(f"{base}/images/floor.png")
+# img.save(f"{base}/images/floor.png")
 print("✓ floor.png")
 
 # ── center_obj.png ── 机オブジェクト 256x256 (RGBA)

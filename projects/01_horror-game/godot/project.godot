@@ -1,0 +1,42 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
+[application]
+
+config/name="怪異探偵ホラー"
+config/name_localized={
+"ja": "怪異探偵ホラー"
+}
+config/description="ドット絵風レトロ・サスペンスホラー
+クォータービュー探索 + 1人称調査画面"
+config/version="0.1.0"
+config/tags=["horror", "pixel_art", "mystery"]
+run/main_scene="res://scenes/test_room.tscn"
+config/features=PackedStringArray("4.7")
+config/icon="res://assets/images/icon.png"
+
+[configuration]
+
+config_version=5
+
+[display]
+
+window/size/viewport_width=640
+window/size/viewport_height=360
+window/stretch/mode="canvas_items"
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
+renderer/rendering_method="gl_compatibility"

@@ -1,0 +1,58 @@
+{
+  // ─────────────────────────────────────────────
+  // GDScript / Godot 4 設定
+  // ─────────────────────────────────────────────
+  "gdscript_lsp_server_port": 6005,
+  "editor.formatOnSave": true,
+  "files.associations": {
+    "*.gd": "gdscript",
+    "*.tscn": "text",
+    "*.tres": "text",
+    "*.godot": "text"
+  },
+  "[gdscript]": {
+    "editor.tabSize": 1,
+    "editor.insertSpaces": false,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "geequlim.godot-tools"
+  },
+
+  // ─────────────────────────────────────────────
+  // Python 設定（アセット自動生成スクリプト用）
+  // ─────────────────────────────────────────────
+  "python.defaultInterpreterPath": "/usr/bin/python3",
+  "[python]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true
+  },
+  "python.terminal.activateEnvironment": true,
+
+  // ─────────────────────────────────────────────
+  // エディタ共通設定
+  // ─────────────────────────────────────────────
+  "editor.fontSize": 14,
+  "editor.wordWrap": "on",
+  "editor.rulers": [100],
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+
+  // ─────────────────────────────────────────────
+  // 除外設定（Godot キャッシュを無視）
+  // ─────────────────────────────────────────────
+  "files.exclude": {
+    "**/.godot": true,
+    "**/__pycache__": true,
+    "**/*.pyc": true
+  },
+  "search.exclude": {
+    "**/.godot": true,
+    "**/node_modules": true,
+    "**/__pycache__": true
+  },
+
+  // ─────────────────────────────────────────────
+  // Continue（AI アシスト）設定
+  // ─────────────────────────────────────────────
+  "continue.enableTabAutocomplete": true
+}

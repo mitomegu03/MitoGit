@@ -1,1 +1,2 @@
-Everything up-to-date
+/workspaces/MitoGit/projects/01_horror-game/godot/assets
+/workspaces/MitoGit/projects/01_horror-game/assets

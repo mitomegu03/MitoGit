@@ -1,13 +1,13 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/investigation/investigate_trigger.gd" id="2_trigger"]
 [ext_resource type="Script" path="res://scripts/ui/investigation_ui.gd" id="3_ui"]
-[ext_resource type="Texture2D" path="res://assets/images/floor.png" id="4_floor"]
-[ext_resource type="Texture2D" path="res://assets/images/center_obj.png" id="5_center_obj"]
-[ext_resource type="Texture2D" path="res://assets/images/desk_fps.png" id="6_desk_fp"]
-[ext_resource type="AudioStream" path="res://assets/audio/ambient.mp3" id="7_ambient"]
-[ext_resource type="Texture2D" path="res://assets/images/light_mask.png" id="8_light"]
+[ext_resource type="Texture2D" path="res://assets/images/floor.tres" id="4_floor"]
+[ext_resource type="Texture2D" path="res://assets/images/center_obj.tres" id="5_center_obj"]
+[ext_resource type="Texture2D" path="res://assets/images/desk_fps.tres" id="6_desk_fp"]
+[ext_resource type="Texture2D" path="res://assets/images/light_mask.tres" id="8_light"]
+
 
 [sub_resource type="RectangleShape2D" id="1_wall_n"]
 size = Vector2(640, 20)
@@ -45,8 +45,7 @@ stretch_mode = 1
 color = Color(0.06, 0.06, 0.08, 1)
 
 [node name="AmbientPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("7_ambient")
-autoplay = true
+autoplay = false
 volume_db = -10.0
 
 [node name="WallN" type="StaticBody2D" parent="."]

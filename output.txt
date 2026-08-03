@@ -1,8 +1,1 @@
-ambient.mp3
-test_door.mp3
-center_obj.png
-desk_fp.png
-desk_fps.png
-floor.png
-light_mask.png
-test_texture.png
+Everything up-to-date

@@ -7,6 +7,9 @@ extends CharacterBody2D
 ## 移動速度
 const SPEED := 150.0
 
+## 調査中フラグ（true だと移動不可）
+var is_inspecting := false
+
 @onready var flashlight: PointLight2D = $FlashLight
 @onready var body_polygon: Polygon2D = $BodyPolygon
 
@@ -15,6 +18,13 @@ func _ready() -> void:
 	add_to_group("player")
 
 func _physics_process(_delta: float) -> void:
+	# 調査中は移動を停止
+	if is_inspecting:
+		velocity = Vector2.ZERO
+		var mouse_dir := get_global_mouse_position() - global_position
+		flashlight.rotation = mouse_dir.angle()
+		return
+	
 	# 8方向移動入力を取得
 	var direction := Vector2(
 		Input.get_axis("ui_left", "ui_right"),

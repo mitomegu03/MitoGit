@@ -49,4 +49,9 @@ func _physics_process(_delta: float) -> void:
 
 	# ── 左右スプライト反転 ─────────────────────
 	if input_x != 0:
-		$Sprite2D.flip_h = input_x < 0
+		if has_node("Sprite2D"):
+			var spr = get_node("Sprite2D")
+			if "flip_h" in spr:
+				spr.flip_h = input_x < 0
+			elif spr is Polygon2D:
+				spr.scale.x = -1 if input_x < 0 else 1

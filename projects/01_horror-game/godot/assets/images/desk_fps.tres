@@ -1,4 +1,4 @@
-[gd_resource type="GradientTexture2D" load_steps=2 format=3]
+[gd_resource type="GradientTexture2D" format=3 uid="uid://df4puj738kneh"]
 
 [sub_resource type="Gradient" id="Gradient_df"]
 colors = PackedColorArray(0.35, 0.25, 0.15, 1, 0.55, 0.42, 0.3, 1)
@@ -7,4 +7,3 @@ colors = PackedColorArray(0.35, 0.25, 0.15, 1, 0.55, 0.42, 0.3, 1)
 gradient = SubResource("Gradient_df")
 width = 520
 height = 200
-fill = 0

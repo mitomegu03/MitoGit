@@ -1,6 +1,9 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3 uid="uid://i48gfglltlig"]
 
-[ext_resource type="Script" path="res://scripts/player/player_side.gd" id="1_player"]
+[ext_resource type="Script" uid="uid://gnvdhxjoyxot" path="res://scripts/player/player_side.gd" id="1_player"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_player"]
+radius = 16.0
 
 [sub_resource type="Shader" id="Shader_blur"]
 code = "
@@ -29,85 +32,73 @@ shader = SubResource("Shader_blur")
 shader_parameter/blur_amount = 3.5
 shader_parameter/opacity = 0.85
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_player"]
-radius = 16.0
+[node name="SideTestRoom" type="Node2D" unique_id=2145165460]
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_bg"]
-width = 640
-height = 360
-
-[node name="SideTestRoom" type="Node2D"]
-
-[node name="Background" type="Parallax2D" parent="."]
+[node name="Background" type="Parallax2D" parent="." unique_id=1667358847]
 scroll_scale = Vector2(0.8, 0.8)
 
-[node name="BGRect" type="ColorRect" parent="Background"]
+[node name="BGRect" type="ColorRect" parent="Background" unique_id=1776862572]
 offset_right = 640.0
 offset_bottom = 360.0
 color = Color(0.18, 0.15, 0.22, 1)
 
-[node name="BGWindow" type="ColorRect" parent="Background"]
+[node name="BGWindow" type="ColorRect" parent="Background" unique_id=1910536629]
 offset_left = 240.0
 offset_top = 40.0
 offset_right = 400.0
 offset_bottom = 180.0
 color = Color(0.35, 0.38, 0.55, 1)
 
-[node name="GameArea" type="Node2D" parent="."]
+[node name="GameArea" type="Node2D" parent="." unique_id=815189096]
 y_sort_enabled = true
 
-[node name="Player" type="CharacterBody2D" parent="GameArea"]
+[node name="Player" type="CharacterBody2D" parent="GameArea" unique_id=667321411]
 position = Vector2(320, 240)
 script = ExtResource("1_player")
 
-[node name="Sprite2D" type="Polygon2D" parent="GameArea/Player"]
-polygon = PackedVector2Array(-10, -20, 10, -20, 10, 20, -10, 20)
+[node name="Sprite2D" type="Polygon2D" parent="GameArea/Player" unique_id=1743931680]
 color = Color(0.9, 0.85, 0.7, 1)
+polygon = PackedVector2Array(-10, -20, 10, -20, 10, 20, -10, 20)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="GameArea/Player"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameArea/Player" unique_id=460656744]
 shape = SubResource("CircleShape2D_player")
 
-[node name="Desk" type="StaticBody2D" parent="GameArea"]
+[node name="Desk" type="StaticBody2D" parent="GameArea" unique_id=1426178292]
 position = Vector2(200, 220)
 
-[node name="DeskSprite" type="ColorRect" parent="GameArea/Desk"]
+[node name="DeskSprite" type="ColorRect" parent="GameArea/Desk" unique_id=1129641524]
 offset_left = -40.0
 offset_top = -20.0
 offset_right = 40.0
 offset_bottom = 20.0
 color = Color(0.55, 0.38, 0.22, 1)
 
-[node name="CanvasModulate" type="CanvasModulate" parent="."]
-color = Color(0.55, 0.52, 0.60, 1)
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1369948553]
+color = Color(0.55, 0.52, 0.6, 1)
 
-[node name="Foreground" type="Parallax2D" parent="."]
-scroll_scale = Vector2(1.2, 1.2)
+[node name="Foreground" type="Parallax2D" parent="." unique_id=1238630350]
 material = SubResource("ShaderMaterial_blur")
+scroll_scale = Vector2(1.2, 1.2)
 
-[node name="PillarLeft" type="ColorRect" parent="Foreground"]
+[node name="PillarLeft" type="ColorRect" parent="Foreground" unique_id=1772379718]
 offset_left = -20.0
-offset_top = 0.0
 offset_right = 30.0
 offset_bottom = 360.0
 color = Color(0.05, 0.04, 0.06, 0.9)
 
-[node name="PillarRight" type="ColorRect" parent="Foreground"]
+[node name="PillarRight" type="ColorRect" parent="Foreground" unique_id=1853622951]
 offset_left = 610.0
-offset_top = 0.0
 offset_right = 660.0
 offset_bottom = 360.0
 color = Color(0.05, 0.04, 0.06, 0.9)
 
-[node name="CurtainLeft" type="ColorRect" parent="Foreground"]
-offset_left = 0.0
-offset_top = 0.0
+[node name="CurtainLeft" type="ColorRect" parent="Foreground" unique_id=212649332]
 offset_right = 60.0
 offset_bottom = 200.0
 color = Color(0.08, 0.05, 0.05, 0.85)
 
-[node name="CurtainRight" type="ColorRect" parent="Foreground"]
+[node name="CurtainRight" type="ColorRect" parent="Foreground" unique_id=1343891577]
 offset_left = 580.0
-offset_top = 0.0
 offset_right = 640.0
 offset_bottom = 200.0
 color = Color(0.08, 0.05, 0.05, 0.85)

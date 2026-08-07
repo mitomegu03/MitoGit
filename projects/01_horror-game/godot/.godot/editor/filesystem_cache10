@@ -18,9 +18,9 @@ test_room.tscn::PackedScene::-1::1785780639::0::1::::<><><>0<>0<><>::res://scrip
 ::res://scripts/investigation/::1785777038
 investigate_trigger.gd::GDScript::2436268810926455312::1785772420::0::1::::<>Area2D<><>0<>0<><>::
 ::res://scripts/lighting/::1785771018
-::res://scripts/player/::1786115327
+::res://scripts/player/::1786116180
 player.gd::GDScript::3076883528512968026::1786058217::0::1::::<>CharacterBody2D<><>0<>0<><>::
-player_side.gd::GDScript::449250790483332299::1786115273::0::1::::<>CharacterBody2D<><>0<>0<><>::
+player_side.gd::GDScript::449250790483332299::1786116180::0::1::::<>CharacterBody2D<><>0<>0<><>::
 ::res://scripts/ui/::1786106429
 investigation_ui.gd::GDScript::4471980129036375518::1786106429::0::1::::<>CanvasLayer<><>0<>0<><>::
 ::res://shaders/::1786115328

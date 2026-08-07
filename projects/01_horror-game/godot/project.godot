@@ -22,7 +22,7 @@ config/description="ドット絵風レトロ・サスペンスホラー
 クォータービュー探索 + 1人称調査画面"
 config/version="0.1.0"
 config/tags=["horror", "pixel_art", "mystery"]
-run/main_scene="res://scenes/test_room.tscn"
+run/main_scene="res://scenes/side_test.tscn"
 config/features=PackedStringArray("4.7")
 config/icon="res://assets/images/icon.png"
 

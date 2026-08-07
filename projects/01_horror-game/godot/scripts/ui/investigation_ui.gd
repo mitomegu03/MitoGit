@@ -1,4 +1,4 @@
-·ー"'extends CanvasLayer
+extends CanvasLayer
 
 # ─────────────────────────────────────────────
 # 1人称調査画面UI

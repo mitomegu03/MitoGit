@@ -19,5 +19,5 @@ investigate_trigger.gd::GDScript::2436268810926455312::1785772420::0::1::::<>Are
 ::res://scripts/lighting/::1785771018
 ::res://scripts/player/::1786058217
 player.gd::GDScript::3076883528512968026::1786058217::0::1::::<>CharacterBody2D<><>0<>0<><>::
-::res://scripts/ui/::1786105548
-investigation_ui.gd::GDScript::4471980129036375518::1786105548::0::1::::<>RefCounted<><>0<>0<><>::
+::res://scripts/ui/::1786106429
+investigation_ui.gd::GDScript::4471980129036375518::1786106429::0::1::::<>CanvasLayer<><>0<>0<><>::

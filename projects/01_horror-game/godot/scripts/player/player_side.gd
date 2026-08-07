@@ -43,10 +43,15 @@ func _physics_process(_delta: float) -> void:
 
 	# ── 奥行きスケール自動演出 ─────────────────
 	# Y座標が小さい（奥）ほど縮小、大きい（手前）ほど等倍
-	var depth_ratio := (position.y - Y_MIN) / (Y_MAX - Y_MIN)  # 0.0(奥) ~ 1.0(手前)
-	var target_scale := lerp(SCALE_FAR, SCALE_NEAR, depth_ratio)
+	var depth_ratio: float = (position.y - Y_MIN) / (Y_MAX - Y_MIN)  # 0.0(奥) ~ 1.0(手前)
+	var target_scale: float = lerpf(SCALE_FAR, SCALE_NEAR, depth_ratio)
 	scale = Vector2(target_scale, target_scale)
 
 	# ── 左右スプライト反転 ─────────────────────
 	if input_x != 0:
-		$Sprite2D.flip_h = input_x < 0
+		if has_node("Sprite2D"):
+			var spr = get_node("Sprite2D")
+			if "flip_h" in spr:
+				spr.flip_h = input_x < 0
+			elif spr is Polygon2D:
+				spr.scale.x = -1 if input_x < 0 else 1

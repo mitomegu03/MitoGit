@@ -1,4 +1,4 @@
-extends CharacterBody2D
+cextends CharacterBody2D
 
 # ─────────────────────────────────────────────
 # player_side.gd

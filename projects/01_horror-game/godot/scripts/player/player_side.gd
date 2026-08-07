@@ -43,8 +43,8 @@ func _physics_process(_delta: float) -> void:
 
 	# ── 奥行きスケール自動演出 ─────────────────
 	# Y座標が小さい（奥）ほど縮小、大きい（手前）ほど等倍
-	var depth_ratio := (position.y - Y_MIN) / (Y_MAX - Y_MIN)  # 0.0(奥) ~ 1.0(手前)
-	var target_scale := lerp(SCALE_FAR, SCALE_NEAR, depth_ratio)
+	var depth_ratio: float = (position.y - Y_MIN) / (Y_MAX - Y_MIN)  # 0.0(奥) ~ 1.0(手前)
+	var target_scale: float = lerpf(SCALE_FAR, SCALE_NEAR, depth_ratio)
 	scale = Vector2(target_scale, target_scale)
 
 	# ── 左右スプライト反転 ─────────────────────

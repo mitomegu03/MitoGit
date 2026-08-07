@@ -1,0 +1,113 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/player_side.gd" id="1_player"]
+
+[sub_resource type="Shader" id="Shader_blur"]
+code = "
+shader_type canvas_item;
+uniform float blur_amount : hint_range(0.0, 10.0) = 3.0;
+uniform float opacity : hint_range(0.0, 1.0) = 0.85;
+void fragment() {
+	vec2 pixel_size = TEXTURE_PIXEL_SIZE;
+	vec4 color = vec4(0.0);
+	float kernel[25] = float[](1.0,4.0,7.0,4.0,1.0,4.0,16.0,26.0,16.0,4.0,7.0,26.0,41.0,26.0,7.0,4.0,16.0,26.0,16.0,4.0,1.0,4.0,7.0,4.0,1.0);
+	float kernel_sum = 273.0;
+	for (int x = -2; x <= 2; x++) {
+		for (int y = -2; y <= 2; y++) {
+			vec2 offset = vec2(float(x), float(y)) * pixel_size * blur_amount;
+			int idx = (x + 2) * 5 + (y + 2);
+			color += texture(TEXTURE, UV + offset) * (kernel[idx] / kernel_sum);
+		}
+	}
+	color.a *= opacity;
+	COLOR = color;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_blur"]
+shader = SubResource("Shader_blur")
+shader_parameter/blur_amount = 3.5
+shader_parameter/opacity = 0.85
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_player"]
+radius = 16.0
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_bg"]
+width = 640
+height = 360
+
+[node name="SideTestRoom" type="Node2D"]
+
+[node name="Background" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.8, 0.8)
+
+[node name="BGRect" type="ColorRect" parent="Background"]
+offset_right = 640.0
+offset_bottom = 360.0
+color = Color(0.07, 0.06, 0.09, 1)
+
+[node name="BGWindow" type="ColorRect" parent="Background"]
+offset_left = 240.0
+offset_top = 40.0
+offset_right = 400.0
+offset_bottom = 180.0
+color = Color(0.12, 0.11, 0.18, 1)
+
+[node name="GameArea" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="Player" type="CharacterBody2D" parent="GameArea"]
+position = Vector2(320, 240)
+script = ExtResource("1_player")
+
+[node name="Sprite2D" type="Polygon2D" parent="GameArea/Player"]
+polygon = PackedVector2Array(-10, -20, 10, -20, 10, 20, -10, 20)
+color = Color(0.85, 0.82, 0.75, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameArea/Player"]
+shape = SubResource("CircleShape2D_player")
+
+[node name="Desk" type="StaticBody2D" parent="GameArea"]
+position = Vector2(200, 220)
+
+[node name="DeskSprite" type="ColorRect" parent="GameArea/Desk"]
+offset_left = -40.0
+offset_top = -20.0
+offset_right = 40.0
+offset_bottom = 20.0
+color = Color(0.35, 0.22, 0.12, 1)
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0.07, 0.06, 0.09, 1)
+
+[node name="Foreground" type="Parallax2D" parent="."]
+scroll_scale = Vector2(1.2, 1.2)
+material = SubResource("ShaderMaterial_blur")
+
+[node name="PillarLeft" type="ColorRect" parent="Foreground"]
+offset_left = -20.0
+offset_top = 0.0
+offset_right = 30.0
+offset_bottom = 360.0
+color = Color(0.05, 0.04, 0.06, 0.9)
+
+[node name="PillarRight" type="ColorRect" parent="Foreground"]
+offset_left = 610.0
+offset_top = 0.0
+offset_right = 660.0
+offset_bottom = 360.0
+color = Color(0.05, 0.04, 0.06, 0.9)
+
+[node name="CurtainLeft" type="ColorRect" parent="Foreground"]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 60.0
+offset_bottom = 200.0
+color = Color(0.08, 0.05, 0.05, 0.85)
+
+[node name="CurtainRight" type="ColorRect" parent="Foreground"]
+offset_left = 580.0
+offset_top = 0.0
+offset_right = 640.0
+offset_bottom = 200.0
+color = Color(0.08, 0.05, 0.05, 0.85)

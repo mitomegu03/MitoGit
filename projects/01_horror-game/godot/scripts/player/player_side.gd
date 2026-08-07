@@ -30,8 +30,8 @@ func _physics_process(_delta: float) -> void:
 		return
 
 	# ── 入力取得 ──────────────────────────────
-	var input_x := Input.get_axis("move_left", "move_right")
-	var input_y := Input.get_axis("move_up",   "move_down")
+	var input_x := Input.get_axis("ui_left", "ui_right")
+	var input_y := Input.get_axis("ui_up",   "ui_down")
 
 	# ── 移動 ──────────────────────────────────
 	velocity.x = input_x * SPEED_X

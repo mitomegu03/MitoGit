@@ -5,11 +5,11 @@
 ambient.mp3::AudioStreamMP3::9085075515156894051::1785780639::1785780639::1::::<><><>0<>0<>0e8113443ce9d61b7e5f4937e2f2bcc0<>res://.godot/imported/ambient.mp3-d2a5f7baea997f7f741666678cd363ea.mp3str::
 ambient.tres::AudioStreamGenerator::-1::1785780639::0::1::::<><><>0<>0<><>::
 test_door.mp3::AudioStreamMP3::4459911650655765647::1785780639::1785780639::1::::<><><>0<>0<>5705a15219655c7ee084528256d9822a<>res://.godot/imported/test_door.mp3-a256c3ee4281565497ad897cdf37471a.mp3str::
-::res://assets/images/::1785778275
+::res://assets/images/::1786105548
 center_obj.tres::GradientTexture2D::-1::1785780639::0::1::::<><><>0<>0<><>::
 desk_fps.tres::GradientTexture2D::-1::1785780639::0::1::::<><><>0<>0<><>::
 floor.tres::GradientTexture2D::-1::1785780639::0::1::::<><><>0<>0<><>::
-light_mask.tres::GradientTexture2D::-1::1785780639::0::1::::<><><>0<>0<><>::
+light_mask.tres::GradientTexture2D::-1::1786105548::0::1::::<><><>0<>0<><>::
 ::res://resources/::1785771018
 ::res://scenes/::1785778275
 test_room.tscn::PackedScene::-1::1785780639::0::1::::<><><>0<>0<><>::res://scripts/player/player.gd<>res://scripts/investigation/investigate_trigger.gd<>res://scripts/ui/investigation_ui.gd<>res://assets/images/floor.tres<>res://assets/images/center_obj.tres<>res://assets/images/desk_fps.tres<>res://assets/images/light_mask.tres
@@ -19,5 +19,5 @@ investigate_trigger.gd::GDScript::2436268810926455312::1785772420::0::1::::<>Are
 ::res://scripts/lighting/::1785771018
 ::res://scripts/player/::1786058217
 player.gd::GDScript::3076883528512968026::1786058217::0::1::::<>CharacterBody2D<><>0<>0<><>::
-::res://scripts/ui/::1786058217
-investigation_ui.gd::GDScript::4471980129036375518::1786058217::0::1::::<>CanvasLayer<><>0<>0<><>::
+::res://scripts/ui/::1786105548
+investigation_ui.gd::GDScript::4471980129036375518::1786105548::0::1::::<>RefCounted<><>0<>0<><>::

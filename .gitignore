@@ -5,3 +5,5 @@ node_modules/
 npm-debug.log*
 .DS_Store
 coverage/
+.venv/
+__pycache__/
